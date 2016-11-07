@@ -9,10 +9,10 @@
 import Foundation
 import CoreBluetooth
 
-typealias CompletionHandler = Bool -> Void
-typealias NewDeviceFoundHandler = Device -> Void
-typealias ServicesFoundHandler = [CBUUID: DeviceService] -> Void
-typealias CharacteristicUpdateHandler = NSData -> Void
+typealias CompletionHandler = (Bool) -> Void
+typealias NewDeviceFoundHandler = (Device) -> Void
+typealias ServicesFoundHandler = ([CBUUID: DeviceService]) -> Void
+typealias CharacteristicUpdateHandler = (Data) -> Void
 
 class Callback<T> {
   
@@ -33,22 +33,22 @@ class Callback<T> {
 
 class Callbacks<T> {
   
-  var callbacks = Array<(T -> Void)?>()
+  var callbacks = Array<((T) -> Void)?>()
   
-  func append(callback: (T -> Void)?) -> Callback<T> {
+  func append(_ callback: ((T) -> Void)?) -> Callback<T> {
     callbacks.append(callback)
     return Callback<T>(callbacks: self, id: callbacks.count - 1)
   }
   
-  func remove(id: Int) {
-    callbacks.removeAtIndex(id)
+  func remove(_ id: Int) {
+    callbacks.remove(at: id)
   }
   
   func removeAll() {
-    callbacks.removeAll(keepCapacity: false)
+    callbacks.removeAll(keepingCapacity: false)
   }
   
-  func call(arg: T) {
+  func call(_ arg: T) {
     for callback in callbacks {
       callback?(arg)
     }
@@ -58,9 +58,9 @@ class Callbacks<T> {
 
 class OneTimeCallbacks<T> : Callbacks<T> {
   
-  override func call(arg: T) {
-    var ocallbacks = callbacks
-    callbacks.removeAll(keepCapacity: false)
+  override func call(_ arg: T) {
+    let ocallbacks = callbacks
+    callbacks.removeAll(keepingCapacity: false)
     for callback in ocallbacks {
       callback?(arg)
     }

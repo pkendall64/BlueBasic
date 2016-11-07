@@ -18,7 +18,7 @@ class Device: NSObject, CBPeripheralDelegate {
   var serviceCallbacks = OneTimeCallbacks<[CBUUID: DeviceService]>()
   var characteristics = 0
   var delegate: DeviceDelegate?
-  var readCallbacks = [CBUUID: OneTimeCallbacks<NSData?>]()
+  var readCallbacks = [CBUUID: OneTimeCallbacks<Data?>]()
   
   var rssi: Int
   
@@ -30,7 +30,7 @@ class Device: NSObject, CBPeripheralDelegate {
     self.peripheral.delegate = self
   }
   
-  func services(callback: ServicesFoundHandler) {
+  func services(_ callback: @escaping ServicesFoundHandler) {
     if !isPopulated {
       serviceCallbacks.append(callback)
       if !isConnected {
@@ -50,13 +50,13 @@ class Device: NSObject, CBPeripheralDelegate {
     }
   }
   
-  func connect(onConnected: CompletionHandler? = nil) {
+  func connect(_ onConnected: CompletionHandler? = nil) {
     manager.connect(self) {
       success in
       if success {
         self.manager.disconnectCallbacks.append({
           ignore in
-          var d = self.delegate
+          let d = self.delegate
           d?.onDisconnect()
         })
       }
@@ -64,8 +64,8 @@ class Device: NSObject, CBPeripheralDelegate {
     }
   }
   
-  func disconnect(onDisconnect: CompletionHandler? = nil) {
-    manager.disconnect(self, onDisconnect)
+  func disconnect(_ onDisconnect: CompletionHandler? = nil) {
+    manager.disconnect(self, onDisconnect: onDisconnect)
   }
   
   var isConnected: Bool = false {
@@ -74,7 +74,7 @@ class Device: NSObject, CBPeripheralDelegate {
         serviceCallbacks.removeAll()
       } else if isConnected && !oldValue {
         isPopulated = false
-        serviceList.removeAll(keepCapacity: false)
+        serviceList.removeAll(keepingCapacity: false)
       }
     }
   }
@@ -85,79 +85,90 @@ class Device: NSObject, CBPeripheralDelegate {
     }
   }
   
-  var identifier: NSUUID {
+  var identifier: UUID {
     get {
       return peripheral.identifier;
     }
   }
   
-  func write(data: NSData, characteristic: CBCharacteristic, type: CBCharacteristicWriteType) {
+  func write(_ data: Data, characteristic: CBCharacteristic, type: CBCharacteristicWriteType) {
     if isConnected {
-      peripheral.writeValue(data, forCharacteristic: characteristic, type: type)
+      peripheral.writeValue(data, for: characteristic, type: type)
     }
   }
   
-  func notify(uuid: CBUUID, serviceUUID: CBUUID) {
+  func notify(_ uuid: CBUUID, serviceUUID: CBUUID) {
     if isConnected {
       services() {
         list in
         if let characteristic = list[serviceUUID]?.characteristics[uuid] {
-          self.peripheral.setNotifyValue(true, forCharacteristic: characteristic)
+          self.peripheral.setNotifyValue(true, for: characteristic)
         }
       }
     }
   }
   
-  func read(characteristic: CBCharacteristic, onRead: NSData? -> Void) {
+  func read(_ characteristic: CBCharacteristic, onRead: @escaping (Data?) -> Void) {
     if isConnected {
-      if readCallbacks[characteristic.UUID] == nil {
-        readCallbacks[characteristic.UUID] = OneTimeCallbacks<NSData?>()
+      if readCallbacks[characteristic.uuid] == nil {
+        readCallbacks[characteristic.uuid] = OneTimeCallbacks<Data?>()
       }
-      readCallbacks[characteristic.UUID]!.append(onRead)
-      peripheral.readValueForCharacteristic(characteristic)
+      readCallbacks[characteristic.uuid]!.append(onRead)
+      peripheral.readValue(for: characteristic)
     } else {
       onRead(nil)
     }
   }
   
-  func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
-    if let services = peripheral.services as? [CBService] {
-      characteristics = 0
-      for service in services {
-        serviceList[service.UUID] = DeviceService(device: self, service: service)
-        peripheral.discoverCharacteristics([], forService: service)
-        characteristics++
-      }
+//  func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+//    if let services = peripheral.services as? [CBService] {
+//      characteristics = 0
+//      for service in services {
+//        serviceList[service.UUID] = DeviceService(device: self, service: service)
+//        peripheral.discoverCharacteristics([], forService: service)
+//        characteristics++
+//      }
+//    }
+//  }
+  
+  func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+    characteristics = 0
+    for service in peripheral.services! {
+      let thisService = service as CBService
+      serviceList[service.uuid] = DeviceService(device: self, service: thisService)
+      peripheral.discoverCharacteristics([], for: thisService)
+      characteristics += 1
     }
   }
   
-  func peripheral(peripheral: CBPeripheral!, didDiscoverCharacteristicsForService service: CBService!, error: NSError!) {
-    if serviceList[service.UUID] != nil && --characteristics == 0 {
+  func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    characteristics -= 1
+    if serviceList[service.uuid] != nil && characteristics == 0 {
       isPopulated = true
       serviceCallbacks.call(self.serviceList)
     }
   }
   
-  func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
+  func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
     if error == nil {
-      var value = Utilities.getValue(characteristic)
-      if let callback = readCallbacks[characteristic.UUID] {
-        readCallbacks.removeValueForKey(characteristic.UUID)
+      let value = Utilities.getValue(characteristic)
+      if let callback = readCallbacks[characteristic.uuid] {
+        readCallbacks.removeValue(forKey: characteristic.uuid)
         callback.call(error == nil ? value : nil)
       } else {
-        delegate?.onNotification(error == nil, uuid: characteristic.UUID, data: value)
+        delegate?.onNotification(error == nil, uuid: characteristic.uuid, data: value)
       }
     } else {
-      if let callback = readCallbacks[characteristic.UUID] {
-        readCallbacks.removeValueForKey(characteristic.UUID)
+      if let callback = readCallbacks[characteristic.uuid] {
+        readCallbacks.removeValue(forKey: characteristic.uuid)
         callback.call(nil)
       } else {
-        delegate?.onNotification(true, uuid: characteristic.UUID, data: NSData())
+        delegate?.onNotification(true, uuid: characteristic.uuid, data: Data())
       }
     }
   }
   
-  func peripheral(peripheral: CBPeripheral!, didWriteValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
-    delegate?.onWriteComplete(error == nil, uuid: characteristic.UUID)
+  func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+    delegate?.onWriteComplete(error == nil, uuid: characteristic.uuid)
   }
 }

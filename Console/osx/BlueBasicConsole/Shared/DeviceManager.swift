@@ -11,19 +11,19 @@ import CoreBluetooth
 
 class DeviceManager: NSObject, CBCentralManagerDelegate {
   
-  let manager: CBCentralManager!
+  var manager: CBCentralManager!
   var scanning = false
-  var devices = [NSUUID: Device]()
+  var devices = [UUID: Device]()
   var connectCallbacks = OneTimeCallbacks<Bool>()
   var disconnectCallbacks = OneTimeCallbacks<Bool>()
   var findCallbacks = Callbacks<Device>()
   
   override init() {
     super.init()
-    manager = CBCentralManager(delegate: self, queue: dispatch_get_main_queue())
+    manager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
   }
   
-  func findDevices(onNewDevice: NewDeviceFoundHandler) {
+  func findDevices(_ onNewDevice: @escaping NewDeviceFoundHandler) {
     findCallbacks.append(onNewDevice)
     startScan();
   }
@@ -31,7 +31,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
   func startScan() {
     if !scanning {
       scanning = true
-      if manager.state == .PoweredOn {
+      if manager.state == .poweredOn {
         scan()
       }
     }
@@ -45,16 +45,16 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     }
   }
 
-  func connect(device: Device, onConnected: CompletionHandler?) {
+  func connect(_ device: Device, onConnected: CompletionHandler?) {
     if !device.isConnected {
       connectCallbacks.append(onConnected)
-      manager.connectPeripheral(device.peripheral, options: nil)
+      manager.connect(device.peripheral, options: nil)
     } else {
       onConnected?(true)
     }
   }
   
-  func disconnect(device: Device, onDisconnect: CompletionHandler?) {
+  func disconnect(_ device: Device, onDisconnect: CompletionHandler?) {
     if device.isConnected {
       disconnectCallbacks.append(onDisconnect)
       manager.cancelPeripheralConnection(device.peripheral)
@@ -63,9 +63,9 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     }
   }
   
-  func centralManagerDidUpdateState(central: CBCentralManager!) {
+  func centralManagerDidUpdateState(_ central: CBCentralManager!) {
     switch (manager.state) {
-    case .PoweredOn:
+    case .poweredOn:
       if scanning {
         scan()
       }
@@ -75,44 +75,44 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
   }
 
   func scan() {
-    manager.scanForPeripheralsWithServices(nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+    manager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
   }
 
   
-  func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
+  func centralManager(_ central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [AnyHashable: Any]!, RSSI: NSNumber!) {
     let name = deviceName(peripheral)
-    if let device = devices[peripheral.identifier!] {
-      if (RSSI.integerValue <= 0) {
-        device.rssi = RSSI.integerValue
+    if let device = devices[peripheral.identifier] {
+      if (RSSI.intValue <= 0) {
+        device.rssi = RSSI.intValue
       }
     } else {
-      let device = Device(peripheral: peripheral, rssi: RSSI.integerValue, manager: self)
+      let device = Device(peripheral: peripheral, rssi: RSSI.intValue, manager: self)
       devices[peripheral.identifier] = device
     }
     findCallbacks.call(devices[peripheral.identifier]!)
   }
   
-  func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
+  func centralManager(_ central: CBCentralManager!, didConnect peripheral: CBPeripheral!) {
     if let device = devices[peripheral.identifier] {
       device.isConnected = true
       connectCallbacks.call(true)
     }
   }
 
-  func centralManager(central: CBCentralManager!, didFailToConnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
+  func centralManager(_ central: CBCentralManager!, didFailToConnect peripheral: CBPeripheral!, error: Error!) {
     if let device = devices[peripheral.identifier] {
       connectCallbacks.call(false)
     }
   }
   
-  func centralManager(central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: NSError!) {
+  func centralManager(_ central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: Error!) {
     if let device = devices[peripheral.identifier] {
       device.isConnected = false
       disconnectCallbacks.call(error == nil)
     }
   }
   
-  func deviceName(peripheral: CBPeripheral) -> String {
+  func deviceName(_ peripheral: CBPeripheral) -> String {
     if let n = peripheral.name {
       return n
     } else {

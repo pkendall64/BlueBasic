@@ -24,35 +24,35 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
   var devices: DeviceList!
   var autoUpgrade: AutoUpdateFirmware?
 
-  func applicationDidFinishLaunching(aNotification: NSNotification?) {
+  func applicationDidFinishLaunching(_ aNotification: Notification) {
     
-    console = Console(console: consoleView.contentView.documentView as NSTextView, status: statusField)
+    console = Console(console: consoleView.contentView.documentView as! NSTextView, status: statusField)
     devices = DeviceList(devices: devicesView, manager: manager)
     devices.delegate = self
     devices.scan()
   }
   
-  func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication!) -> Bool {
+  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication!) -> Bool {
     return true
   }
   
-  func applicationWillTerminate(aNotification: NSNotification?) {
+  func applicationWillTerminate(_ aNotification: Notification) {
     console.disconnect()
   }
   
-  func onDeviceConnect(device: Device) {
-    upgradeMenu.enabled = false
-    toDeviceMenu.enabled = false
+  func onDeviceConnect(_ device: Device) {
+    upgradeMenu.isEnabled = false
+    toDeviceMenu.isEnabled = false
     console.connectTo(device) {
       success in
       if success {
-        self.toDeviceMenu.enabled = true
+        self.toDeviceMenu.isEnabled = true
         self.autoUpgrade = AutoUpdateFirmware(console: self.console)
         self.autoUpgrade!.detectUpgrade() {
           needupgrade in
           if needupgrade {
             self.console.status = "Upgrade available"
-            self.upgradeMenu.enabled = true
+            self.upgradeMenu.isEnabled = true
           } else {
             self.autoUpgrade = nil
           }
@@ -61,28 +61,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
     }
   }
   
-  func onDeviceDisconnect(device: Device) {
-    upgradeMenu.enabled = false
-    toDeviceMenu.enabled = false
+  func onDeviceDisconnect(_ device: Device) {
+    upgradeMenu.isEnabled = false
+    toDeviceMenu.isEnabled = false
     console.disconnect()
   }
   
   
-  @IBAction func fromDevice(sender: AnyObject) {
+  @IBAction func fromDevice(_ sender: AnyObject) {
   }
   
-  @IBAction func toDevice(sender: AnyObject) {
+  @IBAction func toDevice(_ sender: AnyObject) {
     if console.isConnected {
       var panel = NSOpenPanel()
       panel.canChooseFiles = true
       panel.title = "Select BASIC file to load onto device"
       if panel.runModal() == NSOKButton {
-        Uploader(self.console!).upload(panel.URL!)
+        Uploader(self.console!).upload(panel.url!)
       }
     }
   }
   
-  @IBAction func upgrade(sender: AnyObject) {
+  @IBAction func upgrade(_ sender: AnyObject) {
     if autoUpgrade != nil {
       autoUpgrade!.upgrade()
     }

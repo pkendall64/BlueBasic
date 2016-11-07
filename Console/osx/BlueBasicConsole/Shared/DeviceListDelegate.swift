@@ -9,6 +9,6 @@
 import Foundation
 
 protocol DeviceListDelegate {
-  func onDeviceConnect(device: Device)
-  func onDeviceDisconnect(device: Device)
+  func onDeviceConnect(_ device: Device)
+  func onDeviceDisconnect(_ device: Device)
 }

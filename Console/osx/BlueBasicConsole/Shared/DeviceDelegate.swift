@@ -12,7 +12,7 @@ import CoreBluetooth
 protocol DeviceDelegate {
   
   func onDisconnect()
-  func onNotification(success: Bool, uuid: CBUUID, data: NSData)
-  func onWriteComplete(success: Bool, uuid: CBUUID)
+  func onNotification(_ success: Bool, uuid: CBUUID, data: Data)
+  func onWriteComplete(_ success: Bool, uuid: CBUUID)
   
 }

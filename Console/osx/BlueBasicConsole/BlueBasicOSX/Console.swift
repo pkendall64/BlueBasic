@@ -28,7 +28,7 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     self.console = console
     self.status = "Not connected"
     super.init()
-    console.automaticQuoteSubstitutionEnabled = false
+    console.isAutomaticQuoteSubstitutionEnabled = false
     console.font = NSFont(name: "Menlo Regular", size: 11)
     console.delegate = self
   }
@@ -37,21 +37,22 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     didSet {
       statusField.stringValue = status
       if isConnected && !isRecoveryMode {
-        console.editable = true
+        console.isEditable = true
         console.window?.makeFirstResponder(console)
       } else {
-        console.editable = false
+        console.isEditable = false
       }
     }
   }
   
   // Workaround
-  func setStatus(status: String) {
+  @nonobjc
+  func setStatus(_ status: String) {
     self.status = status
   }
   
   // Workaround
-  func setDelegate(delegate: ConsoleDelegate) {
+  func setDelegate(_ delegate: ConsoleDelegate) {
     self.delegate = delegate
   }
   
@@ -67,7 +68,7 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     }
   }
   
-  func connectTo(device: Device, onConnected: CompletionHandler? = nil) {
+  func connectTo(_ device: Device, onConnected: CompletionHandler? = nil) {
     disconnect() {
       success in
       self.status = "Connecting..."
@@ -119,17 +120,17 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     }
   }
   
-  func onWriteComplete(success: Bool, uuid: CBUUID) {
+  func onWriteComplete(_ success: Bool, uuid: CBUUID) {
     delegate?.onWriteComplete(uuid)
   }
   
-  func onNotification(success: Bool, uuid: CBUUID, data: NSData) {
+  func onNotification(_ success: Bool, uuid: CBUUID, data: Data) {
     switch uuid {
     case UUIDS.inputCharacteristicUUID:
       if delegate == nil || delegate!.onNotification(uuid, data: data) {
-        var str = NSString(data: data, encoding: NSASCIIStringEncoding)!
-        console.replaceCharactersInRange(NSMakeRange(console.string!.utf16Count, 0), withString: str)
-        console.scrollRangeToVisible(NSMakeRange(console.string!.utf16Count, 0))
+        let str = NSString(data: data, encoding: String.Encoding.ascii.rawValue)!
+        console.replaceCharacters(in: NSMakeRange(console.string!.utf16.count, 0), with: str as String)
+        console.scrollRangeToVisible(NSMakeRange(console.string!.utf16.count, 0))
         console.needsDisplay = true
       }
     default:
@@ -157,30 +158,30 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
   }
   
   func write(_ str: String = "\n") {
-    for ch in str {
+    for ch in str.characters {
       pending.append(ch)
-      if ch == "\n" || pending.utf16Count > 64 {
-        current!.write(pending.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .WithResponse)
+      if ch == "\n" || pending.utf16.count > 64 {
+        current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
         pending = ""
       }
     }
   }
   
-  func textView(textView: NSTextView!, shouldChangeTextInRange affectedCharRange: NSRange, replacementString: String!) -> Bool {
-    var consoleCount = console.string!.utf16Count
+  func textView(_ textView: NSTextView!, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String!) -> Bool {
+    let consoleCount = console.string!.utf16.count
     if current == nil {
       return false
-    } else if replacementString.utf16Count > 0 {
+    } else if replacementString.utf16.count > 0 {
       write(replacementString)
       if affectedCharRange.location == consoleCount {
         return true
       } else {
-        textView.replaceCharactersInRange(NSMakeRange(consoleCount, 0), withString: replacementString)
-        textView.setSelectedRange(NSMakeRange(console.string!.utf16Count, 0))
+        textView.replaceCharacters(in: NSMakeRange(consoleCount, 0), with: replacementString)
+        textView.setSelectedRange(NSMakeRange(console.string!.utf16.count, 0))
         return false
       }
-    } else if affectedCharRange.location == consoleCount - 1 && pending.utf16Count > 0 {
-      pending.removeAtIndex(pending.endIndex.predecessor())
+    } else if affectedCharRange.location == consoleCount - 1 && pending.utf16.count > 0 {
+      pending.remove(at: pending.characters.index(before: pending.endIndex))
       return true
     } else {
       return false

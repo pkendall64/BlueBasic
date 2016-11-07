@@ -22,8 +22,8 @@ class DeviceService {
   var characteristics: [CBUUID: CBCharacteristic] {
     get {
       var characteristics = [CBUUID: CBCharacteristic]()
-      for characteristic in service.characteristics as [CBCharacteristic] {
-        characteristics[characteristic.UUID] = characteristic
+      for characteristic in service.characteristics! as [CBCharacteristic] {
+        characteristics[characteristic.uuid] = characteristic
       }
       return characteristics
     }

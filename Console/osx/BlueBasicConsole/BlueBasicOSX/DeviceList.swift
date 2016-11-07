@@ -21,31 +21,32 @@ class DeviceList: NSObject, NSTableViewDataSource, NSTableViewDelegate {
     self.devices = devices
     self.manager = manager
     super.init()
-    devices.setDataSource(self)
-    devices.selectionHighlightStyle = .Regular
+    devices.dataSource = self
+    devices.selectionHighlightStyle = .regular
     devices.target = self
-    devices.doubleAction = "selectDevice:"
+    devices.doubleAction = #selector(DeviceList.selectDevice(_:))
   }
   
   func scan() {
     manager.findDevices() {
       device in
-      if !contains(self.names, device) {
+//      if !contains(self.names, device) {
+      if !self.names.contains(device) {
         self.names.append(device)
       }
       self.devices.reloadData()
     }
   }
   
-  func numberOfRowsInTableView(tableView: NSTableView!) -> Int {
+  func numberOfRows(in tableView: NSTableView!) -> Int {
     return names.count
   }
   
-  func tableView(tableView: NSTableView!, objectValueForTableColumn tableColumn: NSTableColumn!, row: Int) -> AnyObject! {
+  func tableView(_ tableView: NSTableView!, objectValueFor tableColumn: NSTableColumn!, row: Int) -> Any! {
     return names[row].name
   }
   
-  func selectDevice(id: AnyObject) {
+  func selectDevice(_ id: AnyObject) {
     delegate?.onDeviceConnect(names[devices.clickedRow])
   }
 }

@@ -12,11 +12,11 @@ protocol ConsoleProtocol {
   
   var status: String { get set }
   
-  func setStatus(status: String) // Workaround
+  func setStatus(_ status: String) // Workaround
   
   var delegate: ConsoleDelegate? { get set }
   
-  func setDelegate(delegate: ConsoleDelegate)
+  func setDelegate(_ delegate: ConsoleDelegate)
   
   var current: Device? { get }
   
@@ -24,10 +24,10 @@ protocol ConsoleProtocol {
   
   var isRecoveryMode: Bool { get }
   
-  func connectTo(device: Device, onConnected: CompletionHandler?)
+  func connectTo(_ device: Device, onConnected: CompletionHandler?)
   
-  func disconnect(onDisconnect: CompletionHandler?)
+  func disconnect(_ onDisconnect: CompletionHandler?)
   
-  func write(str: String)
+  func write(_ str: String)
 
 }

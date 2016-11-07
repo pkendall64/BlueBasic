@@ -14,7 +14,7 @@ class Firmware: ConsoleDelegate {
   let console: ConsoleProtocol
   var complete: CompletionHandler? = nil
   let device: Device
-  var firmware : NSData?
+  var firmware : Data?
   var wrote = 0
   var written = 0
   var blockCharacteristic: CBCharacteristic?
@@ -24,7 +24,7 @@ class Firmware: ConsoleDelegate {
     self.device = console.current!
   }
   
-  func upgrade(firmware: NSData, onComplete: CompletionHandler? = nil) {
+  func upgrade(_ firmware: Data, onComplete: CompletionHandler? = nil) {
     
     self.firmware = firmware
     self.complete = onComplete
@@ -35,7 +35,7 @@ class Firmware: ConsoleDelegate {
       console.setStatus("Rebooting")
       console.write("REBOOT UP\n")
       // Wait a moment to give device chance to reboot
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) {
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(1_000_000_000) / Double(NSEC_PER_SEC)) {
         self.console.disconnect() {
           success in
           self.console.connectTo(self.device) {
@@ -47,35 +47,36 @@ class Firmware: ConsoleDelegate {
     }
   }
   
-  func onWriteComplete(uuid: CBUUID) {
+  func onWriteComplete(_ uuid: CBUUID) {
     
     let blocksize = 16
     let countsize = 16
 
     switch uuid {
     case UUIDS.imgIdentityUUID:
-      var nrblocks = (firmware!.length + blocksize - 1) / blocksize
+      let nrblocks = (firmware!.count + blocksize - 1) / blocksize
       for i in 0...nrblocks-1 {
-        var block = NSMutableData(capacity: blocksize + 2)!
-        var blockheader = [ Byte(i & 255), Byte(i >> 8) ]
-        block.appendBytes(blockheader, length: 2)
-        block.appendData(self.firmware!.subdataWithRange(NSMakeRange(i * blocksize, blocksize)))
+        let block = NSMutableData(capacity: blocksize + 2)!
+        let blockheader = [ UInt8(i & 255), UInt8(i >> 8) ]
+        block.append(blockheader, length: 2)
+//        block.append(self.firmware!.subdata(in: NSMakeRange(i * blocksize, blocksize)))
+        block.append(self.firmware!.subdata(in: (i * blocksize)..<(i*blocksize + blocksize)))
         if i < nrblocks - 1 && i % countsize != 0 {
-          device.write(block, characteristic: blockCharacteristic!, type: .WithoutResponse)
+          device.write(block as Data, characteristic: blockCharacteristic!, type: .withoutResponse)
         } else {
-          device.write(block, characteristic: blockCharacteristic!, type: .WithResponse)
-          wrote++
+          device.write(block as Data, characteristic: blockCharacteristic!, type: .withResponse)
+          wrote += 1
         }
       }
     case UUIDS.imgBlockUUID:
-      written++
+      written += 1
       if written == wrote - 1 { // Last ack is always lost as device reboots
         console.setStatus("Waiting...")
         // Wait for 5 seconds to give last writes change to finish
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5_000_000_000), dispatch_get_main_queue()) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(5_000_000_000) / Double(NSEC_PER_SEC)) {
           self.console.disconnect() {
             success in
-            self.console.connectTo(self.device, self.complete)
+            self.console.connectTo(self.device, onConnected: self.complete)
           }
         }
       } else {
@@ -87,7 +88,7 @@ class Firmware: ConsoleDelegate {
     }
   }
 
-  func onNotification(uuid: CBUUID, data: NSData) -> Bool {
+  func onNotification(_ uuid: CBUUID, data: Data) -> Bool {
     return false
   }
   
@@ -100,9 +101,10 @@ class Firmware: ConsoleDelegate {
 
       self.blockCharacteristic = list[UUIDS.oadServiceUUID]!.characteristics[UUIDS.imgBlockUUID]!
       
-      var identCharacteristic = list[UUIDS.oadServiceUUID]!.characteristics[UUIDS.imgIdentityUUID]!
-      let header = self.firmware!.subdataWithRange(NSMakeRange(4, 8)) // version:2, length:2, uid:4
-      self.device.write(header, characteristic: identCharacteristic, type: .WithResponse)
+      let identCharacteristic = list[UUIDS.oadServiceUUID]!.characteristics[UUIDS.imgIdentityUUID]!
+//      let header = self.firmware!.subdata(in: NSMakeRange(4, 8)) // version:2, length:2, uid:4
+      let header = self.firmware!.subdata(in: 4..<12) // version:2, length:2, uid:4
+      self.device.write(header, characteristic: identCharacteristic, type: .withResponse)
     }
   }
   

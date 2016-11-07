@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 
 var _firmwareVersion: String?
-var _firmwareBlob: NSData?
+var _firmwareBlob: Data?
 
 class AutoUpdateFirmware {
   
@@ -24,7 +24,7 @@ class AutoUpdateFirmware {
     self.device = console.current!
   }
   
-  func detectUpgrade(onComplete: CompletionHandler) {
+  func detectUpgrade(_ onComplete: @escaping CompletionHandler) {
     device.services() {
       list in
       let revision = list[UUIDS.deviceInfoServiceUUID]!.characteristics[UUIDS.firmwareRevisionUUID]!
@@ -33,9 +33,9 @@ class AutoUpdateFirmware {
         if data == nil {
           onComplete(false)
         } else {
-          self.fetchLatestVersion(NSString(data: data!, encoding: NSASCIIStringEncoding)!) {
+          self.fetchLatestVersion(String(data: data!, encoding: String.Encoding.ascii)!) {
             success in
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
               onComplete(success)
             }
           }
@@ -44,7 +44,7 @@ class AutoUpdateFirmware {
     }
   }
   
-  func upgrade(onComplete: CompletionHandler? = nil) {
+  func upgrade(_ onComplete: CompletionHandler? = nil) {
     if _firmwareBlob == nil {
       onComplete?(false)
     } else {
@@ -52,36 +52,36 @@ class AutoUpdateFirmware {
     }
   }
   
-  func fetchLatestVersion(currentVersion: String, onComplete: CompletionHandler) {
+  func fetchLatestVersion(_ currentVersion: String, onComplete: @escaping CompletionHandler) {
     if _firmwareVersion == currentVersion {
       onComplete(false)
     } else if _firmwareVersion != nil {
       onComplete(_firmwareBlob != nil)
     } else {
-      var session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+      let session = URLSession(configuration: URLSessionConfiguration.default)
 
-      var versionParts = currentVersion.componentsSeparatedByString("/")
-      (session.dataTaskWithURL(NSURL(string: baseURL + versionParts[0] + ".version")!) {
+      var versionParts = currentVersion.components(separatedBy: "/")
+      (session.dataTask(with: URL(string: baseURL + versionParts[0] + ".version")!, completionHandler: {
         data, response, error in
         if error != nil || data == nil {
           onComplete(false)
         } else {
-          var versionInfo = NSString(data: data!, encoding: NSASCIIStringEncoding)!.substringToIndex(14)
+          let versionInfo = NSString(data: data!, encoding: String.Encoding.ascii.rawValue)!.substring(to: 14)
           if versionInfo <= versionParts[1] {
             _firmwareVersion = currentVersion
             onComplete(false)
           } else {
-            (session.dataTaskWithURL(NSURL(string: self.baseURL + versionParts[0] + ".bin")!) {
+            (session.dataTask(with: URL(string: self.baseURL + versionParts[0] + ".bin")!, completionHandler: {
               data, response, error in
               if error == nil && data != nil {
                 _firmwareBlob = data
                 _firmwareVersion = "\(versionParts[0])/\(versionInfo)"
               }
               onComplete(error == nil)
-            }).resume()
+            }) ).resume()
           }
         }
-      }).resume()
+      }) ).resume()
     }
   }
 }

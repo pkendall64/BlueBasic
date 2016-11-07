@@ -21,7 +21,7 @@ class Uploader: ConsoleDelegate {
     self.console = console
   }
   
-  func upload(url: NSURL, onComplete: CompletionHandler? = nil) {
+  func upload(_ url: URL, onComplete: CompletionHandler? = nil) {
     
     self.complete = onComplete
 
@@ -29,24 +29,34 @@ class Uploader: ConsoleDelegate {
     
     console.status = "Sending...0%"
     
-    var error = NSErrorPointer()
-    var data = NSString(contentsOfURL: url, encoding: NSASCIIStringEncoding, error: error)
-
-    write("NEW\n")
-    for line in data!.componentsSeparatedByString("\n") as [String] {
-      write(line + "\n")
+//    var data = NSString(contentsOfURL: url, encoding: String.Encoding.ascii, error: error)
+//    var data = String(contentsOf: url, encoding: String.Encoding.ascii, error: error)
+    let data : String
+    do
+    {
+       data = try String(contentsOf: url, encoding: String.Encoding.ascii)
     }
-    write("END\n")
+    catch
+    {
+      data = ""
+    }
+    
+      write("NEW\n")
+    for line in data.components(separatedBy: "\n") {
+        write(line + "\n")
+      write("END\n")
+    }
   }
   
-  func write(str: String) {
-    wrote += (str.utf16Count + 63) / 64
+  func write(_ str: String) {
+    wrote += (str.utf16.count + 63) / 64
     console.write(str)
   }
   
-  func onNotification(uuid: CBUUID, data: NSData) -> Bool {
-    var str = NSString(data: data, encoding: NSASCIIStringEncoding)!
-    if uuid == UUIDS.inputCharacteristicUUID && str == "OK\n" &&  ++okcount == 2 {
+  func onNotification(_ uuid: CBUUID, data: Data) -> Bool {
+    let str = NSString(data: data, encoding: String.Encoding.ascii.rawValue)!
+    okcount += 1
+    if uuid == UUIDS.inputCharacteristicUUID && str == "OK\n" &&  okcount == 2 {
       console.status = "Connected"
       console.delegate = nil
       complete?(true)
@@ -56,8 +66,8 @@ class Uploader: ConsoleDelegate {
     }
   }
   
-  func onWriteComplete(uuid: CBUUID) {
-    written++
+  func onWriteComplete(_ uuid: CBUUID) {
+    written += 1
     console.status = String(format: "Sending...%d%%", 100 * written / wrote)
   }
 }

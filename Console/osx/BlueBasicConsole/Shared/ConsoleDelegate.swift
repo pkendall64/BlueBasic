@@ -11,7 +11,7 @@ import CoreBluetooth
 
 protocol ConsoleDelegate {
   
-  func onNotification(uuid: CBUUID, data: NSData) -> Bool
-  func onWriteComplete(uuid: CBUUID)
+  func onNotification(_ uuid: CBUUID, data: Data) -> Bool
+  func onWriteComplete(_ uuid: CBUUID)
   
 }
