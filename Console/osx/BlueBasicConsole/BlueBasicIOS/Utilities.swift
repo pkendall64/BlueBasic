@@ -10,7 +10,7 @@ import Foundation
 import CoreBluetooth
 
 class Utilities {
-  class func getValue(characteristic: CBCharacteristic) -> NSData {
-    return characteristic.value
+  class func getValue(_ characteristic: CBCharacteristic) -> Data {
+    return characteristic.value!
   }
 }

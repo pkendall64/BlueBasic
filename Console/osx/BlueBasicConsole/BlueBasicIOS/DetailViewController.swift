@@ -29,7 +29,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   
   var detailItem: AnyObject? {
     didSet {
-      connectTo(detailItem as Device) {
+      connectTo(detailItem as! Device) {
         success in
         if success {
           self.autoUpgrade = AutoUpdateFirmware(console: self)
@@ -37,7 +37,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
             needupgrade in
             if needupgrade {
               self.status = "Upgrade available"
-              self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upgrade", style: .Plain, target: self, action: "upgrade")
+              self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Upgrade", style: .plain, target: self, action: #selector(DetailViewController.upgrade))
             } else {
               self.autoUpgrade = nil
               self.navigationItem.rightBarButtonItem = nil
@@ -61,29 +61,29 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    console.dataDetectorTypes = .None
+    console.dataDetectorTypes = UIDataDetectorTypes()
     console.delegate = self
     console.layoutManager.allowsNonContiguousLayout = false // Fix scroll jump when keyboard dismissed
     self.navigationItem.title = status
   }
   
-  override func viewWillAppear(animated: Bool) {
+  override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidShow:", name: "UIKeyboardDidShowNotification", object: nil)
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: "UIKeyboardDidHideNotification", object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(DetailViewController.keyboardDidShow(_:)), name: NSNotification.Name(rawValue: "UIKeyboardDidShowNotification"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(DetailViewController.keyboardDidHide(_:)), name: NSNotification.Name(rawValue: "UIKeyboardDidHideNotification"), object: nil)
   }
   
-  override func viewDidAppear(animated: Bool) {
+  override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     if detailItem == nil {
-      popover?.presentPopoverFromBarButtonItem((view.window!.rootViewController as UISplitViewController).displayModeButtonItem(), permittedArrowDirections: .Any, animated: true)
+      popover?.present(from: (view.window!.rootViewController as! UISplitViewController).displayModeButtonItem, permittedArrowDirections: .any, animated: true)
     }
   }
 
-  override func viewWillDisappear(animated: Bool) {
+  override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    NSNotificationCenter.defaultCenter().removeObserver(self, name: "UIKeyboardDidShowNotification", object: nil)
-    NSNotificationCenter.defaultCenter().removeObserver(self, name: "UIKeyboardDidHideNotification", object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "UIKeyboardDidShowNotification"), object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "UIKeyboardDidHideNotification"), object: nil)
     resignActive()
   }
 
@@ -97,10 +97,10 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
     didSet {
       self.navigationItem.title = status
       if isConnected && !isRecoveryMode {
-        console?.editable = true
+        console?.isEditable = true
         console.becomeFirstResponder()
       } else {
-        console?.editable = false
+        console?.isEditable = false
       }
     }
   }
@@ -118,16 +118,17 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   }
   
   // Workaround
-  func setStatus(status: String) {
+  @nonobjc
+  func setStatus(_ status: String) {
     self.status = status
   }
   
   // Workaround
-  func setDelegate(delegate: ConsoleDelegate) {
+  func setDelegate(_ delegate: ConsoleDelegate) {
     self.delegate = delegate
   }
   
-  func connectTo(device: Device, onConnected: CompletionHandler? = nil) {
+  func connectTo(_ device: Device, onConnected: CompletionHandler? = nil) {
     disconnect() {
       success in
       self.status = "Connecting..."
@@ -184,18 +185,18 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
     }
   }
   
-  func onWriteComplete(success: Bool, uuid: CBUUID) {
+  func onWriteComplete(_ success: Bool, uuid: CBUUID) {
     delegate?.onWriteComplete(uuid)
   }
   
-  func onNotification(success: Bool, uuid: CBUUID, data: NSData) {
+  func onNotification(_ success: Bool, uuid: CBUUID, data: Data) {
     switch uuid {
     case UUIDS.inputCharacteristicUUID:
       if delegate == nil || delegate!.onNotification(uuid, data: data) {
-        var str = NSString(data: data, encoding: NSASCIIStringEncoding)!
-        console.selectedRange = NSMakeRange(console.text!.utf16Count, 0)
-        console.insertText(str)
-        console.scrollRangeToVisible(NSMakeRange(console.text!.utf16Count, 0))
+        let str = NSString(data: data, encoding: String.Encoding.ascii.rawValue)!
+        console.selectedRange = NSMakeRange(console.text!.utf16.count, 0)
+        console.insertText(str as String)
+        console.scrollRangeToVisible(NSMakeRange(console.text!.utf16.count, 0))
       }
     default:
       break
@@ -217,7 +218,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
       old.delegate = nil
       old.disconnect() {
         success in
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1_000_000_000), dispatch_get_main_queue()) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(1_000_000_000) / Double(NSEC_PER_SEC)) {
           if onDisconnect != nil {
             onDisconnect!(success)
           }
@@ -229,30 +230,30 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   }
   
   func write(_ str: String = "\n") {
-    for ch in str {
+    for ch in str.characters {
       pending.append(ch)
-      if ch == "\n" || pending.utf16Count > 64 {
-        current!.write(pending.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .WithResponse)
+      if ch == "\n" || pending.utf16.count > 64 {
+        current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
         pending = ""
       }
     }
   }
   
-  func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
     if current == nil {
       return false
-    } else if text.utf16Count > 0 {
+    } else if text.utf16.count > 0 {
       write(text)
-      if range.location == console.text.utf16Count {
+      if range.location == console.text.utf16.count {
         return true
       } else {
-        console.selectedRange = NSMakeRange(console.text!.utf16Count, 0)
+        console.selectedRange = NSMakeRange(console.text!.utf16.count, 0)
         console.insertText(text)
-        console.scrollRangeToVisible(NSMakeRange(console.text.utf16Count, 0))
+        console.scrollRangeToVisible(NSMakeRange(console.text.utf16.count, 0))
         return false
       }
-    } else if range.location == console.text.utf16Count - 1 && pending.utf16Count > 0 {
-      pending.removeAtIndex(pending.endIndex.predecessor())
+    } else if range.location == console.text.utf16.count - 1 && pending.utf16.count > 0 {
+      pending.remove(at: pending.characters.index(before: pending.endIndex))
       return true
     } else {
       return false
@@ -267,45 +268,45 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
 
   func upgrade() {
     if autoUpgrade != nil {
-      let alert = UIAlertController(title: "Upgrade?", message: "Do you want to upgrade the device firmware?", preferredStyle: .Alert)
-      alert.addAction(UIAlertAction(title: "OK", style: .Destructive, handler: {
+      let alert = UIAlertController(title: "Upgrade?", message: "Do you want to upgrade the device firmware?", preferredStyle: .alert)
+      alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: {
         action in
         self.navigationItem.rightBarButtonItem = nil
-        UIApplication.sharedApplication().idleTimerDisabled = true
+        UIApplication.shared.isIdleTimerDisabled = true
         self.autoUpgrade!.upgrade() {
           success in
-          UIApplication.sharedApplication().idleTimerDisabled = false
+          UIApplication.shared.isIdleTimerDisabled = false
         }
       }))
-      alert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: {
+      alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: {
         action in
       }))
-      self.presentViewController(alert, animated: true, completion: nil)
+      self.present(alert, animated: true, completion: nil)
     }
   }
 
   
-  func keyboardDidShow(notification: NSNotification) {
+  func keyboardDidShow(_ notification: Notification) {
     if keyboardOpen == nil {
-      let info = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as NSValue
-      let size = info.CGRectValue().size
+      let info = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue
+      let size = info.cgRectValue.size
 
       var frame = console.frame
       keyboardOpen = frame
-      let bottom = UIScreen.mainScreen().bounds.size.height - (frame.origin.y + frame.size.height)
-      frame.size.height -= (size.height - bottom) + console.font.lineHeight
+      let bottom = UIScreen.main.bounds.size.height - (frame.origin.y + frame.size.height)
+      frame.size.height -= (size.height - bottom) + (console.font?.lineHeight)!
       console.frame = frame
 
-      console.selectedRange = NSMakeRange(console.text!.utf16Count, 0)
-      console.scrollRangeToVisible(NSMakeRange(console.text.utf16Count, 0))
+      console.selectedRange = NSMakeRange(console.text!.utf16.count, 0)
+      console.scrollRangeToVisible(NSMakeRange(console.text.utf16.count, 0))
     }
   }
   
-  func keyboardDidHide(notification: NSNotification) {
+  func keyboardDidHide(_ notification: Notification) {
     if keyboardOpen != nil {
       self.console.frame.size.height = self.keyboardOpen!.size.height
       self.keyboardOpen = nil
-      self.console.scrollRangeToVisible(NSMakeRange(self.console.text.utf16Count, 0))
+      self.console.scrollRangeToVisible(NSMakeRange(self.console.text.utf16.count, 0))
     }
   }
 

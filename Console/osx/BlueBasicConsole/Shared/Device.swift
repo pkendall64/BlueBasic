@@ -32,7 +32,7 @@ class Device: NSObject, CBPeripheralDelegate {
   
   func services(_ callback: @escaping ServicesFoundHandler) {
     if !isPopulated {
-      serviceCallbacks.append(callback)
+      _ = serviceCallbacks.append(callback)
       if !isConnected {
         manager.connect(self) {
           success in
@@ -54,7 +54,7 @@ class Device: NSObject, CBPeripheralDelegate {
     manager.connect(self) {
       success in
       if success {
-        self.manager.disconnectCallbacks.append({
+        _ = self.manager.disconnectCallbacks.append({
           ignore in
           let d = self.delegate
           d?.onDisconnect()
@@ -113,7 +113,7 @@ class Device: NSObject, CBPeripheralDelegate {
       if readCallbacks[characteristic.uuid] == nil {
         readCallbacks[characteristic.uuid] = OneTimeCallbacks<Data?>()
       }
-      readCallbacks[characteristic.uuid]!.append(onRead)
+      _ = readCallbacks[characteristic.uuid]!.append(onRead)
       peripheral.readValue(for: characteristic)
     } else {
       onRead(nil)

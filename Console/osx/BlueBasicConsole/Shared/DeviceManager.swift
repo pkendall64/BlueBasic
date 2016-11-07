@@ -24,7 +24,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
   }
   
   func findDevices(_ onNewDevice: @escaping NewDeviceFoundHandler) {
-    findCallbacks.append(onNewDevice)
+    _ = findCallbacks.append(onNewDevice)
     startScan();
   }
   
@@ -47,7 +47,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
 
   func connect(_ device: Device, onConnected: CompletionHandler?) {
     if !device.isConnected {
-      connectCallbacks.append(onConnected)
+      _ = connectCallbacks.append(onConnected)
       manager.connect(device.peripheral, options: nil)
     } else {
       onConnected?(true)
@@ -56,14 +56,14 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
   
   func disconnect(_ device: Device, onDisconnect: CompletionHandler?) {
     if device.isConnected {
-      disconnectCallbacks.append(onDisconnect)
+      _ = disconnectCallbacks.append(onDisconnect)
       manager.cancelPeripheralConnection(device.peripheral)
     } else {
       onDisconnect?(true)
     }
   }
   
-  func centralManagerDidUpdateState(_ central: CBCentralManager!) {
+  func centralManagerDidUpdateState(_ central: CBCentralManager) {
     switch (manager.state) {
     case .poweredOn:
       if scanning {
@@ -79,10 +79,11 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
   }
 
   
-  func centralManager(_ central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [AnyHashable: Any]!, RSSI: NSNumber!) {
-    let name = deviceName(peripheral)
+  @nonobjc func centralManager(_ central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [AnyHashable: Any]!, RSSI: NSNumber!) {
+    //let name = deviceName(peripheral)
+    _ = deviceName(peripheral)
     if let device = devices[peripheral.identifier] {
-      if (RSSI.intValue <= 0) {
+      if (RSSI.int32Value <= 0) {
         device.rssi = RSSI.intValue
       }
     } else {
@@ -92,20 +93,20 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     findCallbacks.call(devices[peripheral.identifier]!)
   }
   
-  func centralManager(_ central: CBCentralManager!, didConnect peripheral: CBPeripheral!) {
+  func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
     if let device = devices[peripheral.identifier] {
       device.isConnected = true
       connectCallbacks.call(true)
     }
   }
 
-  func centralManager(_ central: CBCentralManager!, didFailToConnect peripheral: CBPeripheral!, error: Error!) {
-    if let device = devices[peripheral.identifier] {
+  func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+    if devices[peripheral.identifier] != nil {
       connectCallbacks.call(false)
     }
   }
   
-  func centralManager(_ central: CBCentralManager!, didDisconnectPeripheral peripheral: CBPeripheral!, error: Error!) {
+  func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
     if let device = devices[peripheral.identifier] {
       device.isConnected = false
       disconnectCallbacks.call(error == nil)

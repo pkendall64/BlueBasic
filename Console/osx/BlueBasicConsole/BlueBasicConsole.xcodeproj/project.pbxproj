@@ -232,6 +232,7 @@
 					222C27BC19DFCC5A001031AB = {
 						CreatedOnToolsVersion = 6.1;
 						DevelopmentTeam = 9V8SY527DR;
+						LastSwiftMigration = 0810;
 					};
 					222C3DC31A0838E2001676FF = {
 						CreatedOnToolsVersion = 6.1;
@@ -380,6 +381,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.xojs.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -397,6 +399,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.xojs.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

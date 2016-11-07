@@ -16,19 +16,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   
   var window: UIWindow?
 
-  func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-    let splitViewController = self.window!.rootViewController as UISplitViewController
-    let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as UINavigationController
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem()
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    let splitViewController = self.window!.rootViewController as! UISplitViewController
+    let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
+    navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
     splitViewController.delegate = self
 
     return true
   }
 
-  func applicationWillResignActive(application: UIApplication) {
-    let splitViewController = self.window!.rootViewController as UISplitViewController
+  func applicationWillResignActive(_ application: UIApplication) {
+    let splitViewController = self.window!.rootViewController as! UISplitViewController
     for view in splitViewController.viewControllers {
-      let controller = (view as UINavigationController).topViewController
+      let controller = (view as! UINavigationController).topViewController
       if let master = controller as? MasterViewController {
         master.resignActive()
       }
@@ -43,21 +43,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
   }
 
-  func applicationDidEnterBackground(application: UIApplication) {
+  func applicationDidEnterBackground(_ application: UIApplication) {
   }
 
-  func applicationWillEnterForeground(application: UIApplication) {
+  func applicationWillEnterForeground(_ application: UIApplication) {
   }
 
-  func applicationDidBecomeActive(application: UIApplication) {
+  func applicationDidBecomeActive(_ application: UIApplication) {
   }
 
-  func applicationWillTerminate(application: UIApplication) {
+  func applicationWillTerminate(_ application: UIApplication) {
   }
 
   // MARK: - Split view
 
-  func splitViewController(splitViewController: UISplitViewController, collapseSecondaryViewController secondaryViewController:UIViewController!, ontoPrimaryViewController primaryViewController:UIViewController!) -> Bool {
+  func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
       if let secondaryAsNavController = secondaryViewController as? UINavigationController {
           if let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController {
               if topAsDetailController.detailItem == nil {
@@ -69,7 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
       return false
   }
   
-  func splitViewController(svc: UISplitViewController, willHideViewController aViewController: UIViewController, withBarButtonItem barButtonItem: UIBarButtonItem, forPopoverController pc: UIPopoverController) {
+  func splitViewController(_ svc: UISplitViewController, willHide aViewController: UIViewController, with barButtonItem: UIBarButtonItem, for pc: UIPopoverController) {
     popover = pc
   }
 
