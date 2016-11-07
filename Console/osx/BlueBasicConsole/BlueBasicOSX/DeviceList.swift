@@ -38,11 +38,11 @@ class DeviceList: NSObject, NSTableViewDataSource, NSTableViewDelegate {
     }
   }
   
-  func numberOfRows(in tableView: NSTableView!) -> Int {
+  func numberOfRows(in tableView: NSTableView) -> Int {
     return names.count
   }
   
-  func tableView(_ tableView: NSTableView!, objectValueFor tableColumn: NSTableColumn!, row: Int) -> Any! {
+  func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
     return names[row].name
   }
   

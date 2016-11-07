@@ -78,8 +78,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     manager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
   }
 
-  
-  @nonobjc func centralManager(_ central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [AnyHashable: Any]!, RSSI: NSNumber!) {
+  func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
     //let name = deviceName(peripheral)
     _ = deviceName(peripheral)
     if let device = devices[peripheral.identifier] {

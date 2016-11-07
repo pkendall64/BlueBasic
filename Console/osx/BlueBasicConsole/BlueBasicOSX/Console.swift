@@ -167,7 +167,9 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     }
   }
   
-  func textView(_ textView: NSTextView!, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String!) -> Bool {
+  //func textView(_ textView: NSTextView!, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String!) -> Bool {
+  
+  func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String!) -> Bool {
     let consoleCount = console.string!.utf16.count
     if current == nil {
       return false

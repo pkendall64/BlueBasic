@@ -32,7 +32,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
     devices.scan()
   }
   
-  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication!) -> Bool {
+  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
     return true
   }
   
@@ -73,10 +73,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
   
   @IBAction func toDevice(_ sender: AnyObject) {
     if console.isConnected {
-      var panel = NSOpenPanel()
+      let panel = NSOpenPanel()
+      panel.allowsMultipleSelection = false
+      panel.canChooseDirectories = false
+      panel.canCreateDirectories = false
       panel.canChooseFiles = true
       panel.title = "Select BASIC file to load onto device"
-      if panel.runModal() == NSOKButton {
+      let i = panel.runModal()
+      if (i == NSModalResponseOK){
         Uploader(self.console!).upload(panel.url!)
       }
     }
