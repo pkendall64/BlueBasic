@@ -79,8 +79,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
       panel.canCreateDirectories = false
       panel.canChooseFiles = true
       panel.title = "Select BASIC file to load onto device"
-      let i = panel.runModal()
-      if (i == NSModalResponseOK){
+      // calling .runModal() works not in sandboxed mode
+      // this would need to be executed in the main thread
+      // needs to be fixed
+      if (panel.runModal() == NSModalResponseOK){
         Uploader(self.console!).upload(panel.url!)
       }
     }
