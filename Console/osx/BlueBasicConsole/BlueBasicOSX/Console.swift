@@ -10,6 +10,13 @@ import Foundation
 import Cocoa
 import CoreBluetooth
 
+extension NSTextView {
+  func append(string: String) {
+    self.textStorage?.append(NSAttributedString(string: string))
+    self.scrollToEndOfDocument(nil)
+  }
+}
+
 class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
   
   let statusField: NSTextField
@@ -165,6 +172,7 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
         pending = ""
       }
     }
+    console.append(string: str)
   }
   
   func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
