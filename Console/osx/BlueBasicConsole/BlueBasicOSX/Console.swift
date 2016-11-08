@@ -167,18 +167,16 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     }
   }
   
-  //func textView(_ textView: NSTextView!, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String!) -> Bool {
-  
-  func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String!) -> Bool {
+  func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
     let consoleCount = console.string!.utf16.count
     if current == nil {
       return false
-    } else if replacementString.utf16.count > 0 {
-      write(replacementString)
+    } else if replacementString!.utf16.count > 0 {
+      write(replacementString!)
       if affectedCharRange.location == consoleCount {
         return true
       } else {
-        textView.replaceCharacters(in: NSMakeRange(consoleCount, 0), with: replacementString)
+        textView.replaceCharacters(in: NSMakeRange(consoleCount, 0), with: replacementString!)
         textView.setSelectedRange(NSMakeRange(console.string!.utf16.count, 0))
         return false
       }
