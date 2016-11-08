@@ -40,12 +40,11 @@ class Uploader: ConsoleDelegate {
     {
       data = ""
     }
-    
-      write("NEW\n")
+    write("NEW\n")
     for line in data.components(separatedBy: "\n") {
-        write(line + "\n")
-      write("END\n")
+      write(line + "\n")
     }
+    write("END\n")
   }
   
   func write(_ str: String) {
@@ -68,6 +67,6 @@ class Uploader: ConsoleDelegate {
   
   func onWriteComplete(_ uuid: CBUUID) {
     written += 1
-    console.status = String(format: "Sending...%d%%", 100 * written / wrote)
+    console.status = String(format: "Sending...%d%% (%d / %d)", 100 * written / wrote, written, wrote)
   }
 }
