@@ -29,5 +29,6 @@ protocol ConsoleProtocol {
   func disconnect(_ onDisconnect: CompletionHandler?)
   
   func write(_ str: String)
-
+  
+  //func append(_ str: String)
 }

@@ -29,27 +29,26 @@ class Uploader: ConsoleDelegate {
     
     console.status = "Sending...0%"
     
-//    var data = NSString(contentsOfURL: url, encoding: String.Encoding.ascii, error: error)
-//    var data = String(contentsOf: url, encoding: String.Encoding.ascii, error: error)
-    let data : String
+    var data : String
     do
     {
        data = try String(contentsOf: url, encoding: String.Encoding.ascii)
+       data = "NEW\n" + data + "END\n"
     }
     catch
     {
       data = ""
     }
-    write("NEW\n")
+    
     for line in data.components(separatedBy: "\n") {
       write(line + "\n")
     }
-    write("END\n")
   }
   
   func write(_ str: String) {
-    wrote += (str.utf16.count + 63) / 64
+    wrote += (str.utf16.count + 19) / 20
     console.write(str)
+    console.append(str)
   }
   
   func onNotification(_ uuid: CBUUID, data: Data) -> Bool {
@@ -67,6 +66,6 @@ class Uploader: ConsoleDelegate {
   
   func onWriteComplete(_ uuid: CBUUID) {
     written += 1
-    console.status = String(format: "Sending...%d%% (%d / %d)", 100 * written / wrote, written, wrote)
+    console.status = String(format: "Sending...%d%%", 100 * written / wrote)
   }
 }
