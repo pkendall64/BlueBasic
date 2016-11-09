@@ -16,6 +16,7 @@ class Uploader: ConsoleDelegate {
   var complete: CompletionHandler? = nil
   var written = 0
   var wrote = 0
+  var chunkArr: [String] = []
   
   init(_ console: Console) {
     self.console = console
@@ -40,32 +41,47 @@ class Uploader: ConsoleDelegate {
       data = ""
     }
     
-    for line in data.components(separatedBy: "\n") {
-      write(line + "\n")
+    for item in data.components(separatedBy: "\n") {
+      let line = item + "\n"
+      write(line)
+      // in order to echo the upload to the console
+      // we slice each line into 20 byte chunks (as write does)
+      var chunk = ""
+      for ch in line.characters {
+        chunk.append(ch)
+        if ch == "\n" || chunk.utf16.count > 19 {
+          chunkArr.append(chunk)
+          chunk = ""
+        }
+      }
     }
   }
   
   func write(_ str: String) {
     wrote += (str.utf16.count + 19) / 20
     console.write(str)
-    console.append(str)
   }
   
   func onNotification(_ uuid: CBUUID, data: Data) -> Bool {
     let str = NSString(data: data, encoding: String.Encoding.ascii.rawValue)!
-    okcount += 1
-    if uuid == UUIDS.inputCharacteristicUUID && str == "OK\n" &&  okcount == 2 {
-      console.status = "Connected"
-      console.delegate = nil
-      complete?(true)
-      return true
-    } else {
-      return false
+    if uuid == UUIDS.inputCharacteristicUUID && str == "OK\n" {
+      okcount += 1
+      return false   // supress OK echo
     }
+    return true
   }
   
   func onWriteComplete(_ uuid: CBUUID) {
     written += 1
     console.status = String(format: "Sending...%d%%", 100 * written / wrote)
+    // echo the uploaded chunks to the console
+    console.append(chunkArr[0])
+    chunkArr.remove(at: 0)
+    if written == wrote {
+      console.status = "Connected"
+      console.append("OK\n")
+      console.delegate = nil
+      complete?(true)
+    }
   }
 }
