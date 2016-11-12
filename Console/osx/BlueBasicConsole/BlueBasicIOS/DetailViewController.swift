@@ -26,6 +26,8 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   
   var autoUpgrade: AutoUpdateFirmware?
   var recoveryMode = false
+  var wrote = 0
+  var written = 0
   
   var detailItem: AnyObject? {
     didSet {
@@ -186,6 +188,14 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   }
   
   func onWriteComplete(_ success: Bool, uuid: CBUUID) {
+    written += 1
+    if wrote > written {
+      status = String(format: "Sending...%d%%", 100 * written / wrote)
+    } else {
+      status = "Connected"
+      wrote = 0
+      written = 0
+    }
     delegate?.onWriteComplete(uuid)
   }
   
@@ -235,6 +245,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
       if ch == "\n" || pending.utf16.count > 19 {
         current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
         pending = ""
+        wrote += 1
       }
     }
   }
