@@ -232,7 +232,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   func write(_ str: String = "\n") {
     for ch in str.characters {
       pending.append(ch)
-      if ch == "\n" || pending.utf16.count > 64 {
+      if ch == "\n" || pending.utf16.count > 19 {
         current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
         pending = ""
       }
