@@ -20,6 +20,8 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
   var outputCharacteristic: CBCharacteristic?
   var pending = ""
   var recoveryMode = false
+  var wrote = 0
+  var written = 0
   
   var delegate: ConsoleDelegate?
 
@@ -121,6 +123,14 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
   }
   
   func onWriteComplete(_ success: Bool, uuid: CBUUID) {
+    written += 1
+    if wrote > written {
+      status = String(format: "Sending...%d%%", 100 * written / wrote)
+    } else {
+      status = "Connected"
+      wrote = 0
+      written = 0
+    }
     delegate?.onWriteComplete(uuid)
   }
   
@@ -163,6 +173,7 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
       if ch == "\n" || pending.utf16.count > 19 {
         current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
         pending = ""
+        wrote += 1
       }
     }
   }
