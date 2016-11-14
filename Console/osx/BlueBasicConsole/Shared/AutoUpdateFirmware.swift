@@ -14,7 +14,8 @@ var _firmwareBlob: Data?
 
 class AutoUpdateFirmware {
   
-  let baseURL = "https://github.com/aanon4/BlueBasic/raw/master/hex/BlueBasic-"
+//  let baseURL = "https://github.com/aanon4/BlueBasic/raw/master/hex/BlueBasic-"
+  let baseURL = "https://github.com/kscheff/BlueBasic/raw/master/hex/BlueBasic-"
 
   let console: ConsoleProtocol
   let device: Device
