@@ -18,11 +18,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
   @IBOutlet weak var consoleView: NSScrollView!
   @IBOutlet weak var toDeviceMenu: NSMenuItem!
   @IBOutlet weak var upgradeMenu: NSMenuItem!
+  @IBOutlet weak var loadFirmwareMenu: NSMenuItem!
   
   let manager = DeviceManager()
   var console: Console!
   var devices: DeviceList!
   var autoUpgrade: AutoUpdateFirmware?
+  var firmwareBlob: Data?
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
     
@@ -43,10 +45,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
   func onDeviceConnect(_ device: Device) {
     upgradeMenu.isEnabled = false
     toDeviceMenu.isEnabled = false
+    loadFirmwareMenu.isEnabled = false
     console.connectTo(device) {
       success in
       if success {
         self.toDeviceMenu.isEnabled = true
+        self.loadFirmwareMenu.isEnabled = true
         self.autoUpgrade = AutoUpdateFirmware(console: self.console)
         self.autoUpgrade!.detectUpgrade() {
           needupgrade in
@@ -64,6 +68,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
   func onDeviceDisconnect(_ device: Device) {
     upgradeMenu.isEnabled = false
     toDeviceMenu.isEnabled = false
+    loadFirmwareMenu.isEnabled = false
+    
     console.disconnect()
   }
   
@@ -78,7 +84,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
       panel.canChooseDirectories = false
       panel.canCreateDirectories = false
       panel.canChooseFiles = true
-      panel.title = "Select BASIC file to load onto device"
+      panel.message = "Select BASIC file to load onto device"
       // calling .runModal() works not in sandboxed mode
       // this would need to be executed in the main thread
       // needs to be fixed
@@ -93,5 +99,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, DeviceListDelegate {
       autoUpgrade!.upgrade()
     }
   }
+
+  @IBAction func update(_ sender: AnyObject){
+    if console.isConnected {
+      let panel = NSOpenPanel()
+      panel.allowsMultipleSelection = false
+      panel.canChooseDirectories = false
+      panel.canCreateDirectories = false
+      panel.canChooseFiles = true
+      panel.allowedFileTypes = ["bin"]
+      panel.message = "Select binary Firmware image to load onto device"
+      if (panel.runModal() == NSModalResponseOK) {
+        do {
+          firmwareBlob = try Data(contentsOf: panel.url!)
+          Firmware(console).upgrade(firmwareBlob!)
+        } catch let error as NSError {
+          print("Could not read file, Error \(error)")
+        }
+      }
+    }
+  }
+  
 }
 
