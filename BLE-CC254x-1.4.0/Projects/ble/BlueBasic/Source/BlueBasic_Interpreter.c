@@ -296,6 +296,7 @@ enum
   CO_POWER,
   CO_INTERNAL,
   CO_EXTERNAL,
+  CO_AVDD,
   CO_DEFAULT_PASSCODE,
   CO_BONDING_ENABLED,
 };
@@ -330,6 +331,7 @@ static const VAR_TYPE constantmap[] =
   CO_POWER,
   CO_INTERNAL,
   CO_EXTERNAL,
+  CO_AVDD,
   BLE_DEFAULT_PASSCODE,
   BLE_BONDING_ENABLED,
 };
@@ -4026,6 +4028,9 @@ cmd_analog:
           break;
         case CO_EXTERNAL:
           analogReference = 0x40;
+          break;
+        case CO_AVDD:
+          analogReference = 0x80;
           break;
         default:
           goto qwhat;

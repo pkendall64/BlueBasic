@@ -9,6 +9,7 @@ static const unsigned char keywords_0[] =
   'A','P','P','E','N','D',FS_APPEND,
   'A','T','T','A','C','H',IN_ATTACH,
   'A','U','T','O','R','U','N',KW_AUTORUN,
+  'A','V','D','D',KW_CONSTANT,CO_AVDD,
   'N','A','M','E',BLE_NAME,
   'N','E','W',KW_NEW,
   'N','E','X','T',KW_NEXT,
