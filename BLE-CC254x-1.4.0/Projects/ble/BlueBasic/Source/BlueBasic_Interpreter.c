@@ -92,7 +92,8 @@ static const char initmsg[]           = "BlueBasic " BUILD_TIMESTAMP " " kVersio
 #else
 static const char initmsg[]           = "BlueBasic " kVersion;
 #endif
-static const char urlmsg[]            = "http://blog.xojs.org/bluebasic";
+//static const char urlmsg[]            = "http://blog.xojs.org/bluebasic";
+static const char urlmsg[]            = "https://github.com/kscheff/BlueBasic";
 static const char memorymsg[]         = " bytes free.";
 
 #define VAR_TYPE    long int
