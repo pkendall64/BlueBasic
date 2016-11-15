@@ -762,22 +762,26 @@ static void tokenize(void)
 //
 void printnum(signed char fieldsize, VAR_TYPE num)
 {
-  VAR_TYPE size = 10;
+  VAR_TYPE size = 1;
+  signed char sign = 10;
 
   if (num < 0)
   {
     OS_putchar('-');
-    num = -num;
+    sign = -sign;
   }
-  for (; size <= num; size *= 10, fieldsize--)
+  for (; size <= num / sign ; size *= 10, fieldsize--)
     ;
   while (fieldsize-- > 0)
   {
     OS_putchar(WS_SPACE);
   }
-  for (size /= 10; size != 0; size /= 10)
+  if (sign < 0)
+    size = -size;
+  for (/*size /= 10*/; size != 0; size /= 10)
   {
-    OS_putchar('0' + num / size % 10);
+    OS_putchar('0' + num / size);
+    num -= num/size*size;
   }
 }
 
