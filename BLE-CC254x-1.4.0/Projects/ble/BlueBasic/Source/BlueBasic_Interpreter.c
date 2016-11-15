@@ -4,12 +4,17 @@
 //
 // Authors:
 //      Tim Wilkinson <tim.j.wilkinson@gmail.com>
+//      Kai Scheffer <kai.scheffer@gmail.com>
 //
 //      Original TinyBasicPlus
 //        Mike Field <hamster@snap.net.nz>
 //	      Scott Lawrence <yorgle@gmail.com>
 //
-
+// v0.7 2016-11-15
+//      added ANALOG REFERENCE, AVDD option
+//      bugfix hanging printnum() 0x80000000 
+//      changed urlmsg to point to GitHub
+//
 // v0.6: 2014-12-01
 //      Finalize Petra version.
 //
