@@ -78,6 +78,7 @@
 		222C3DE51A083946001676FF /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		22567DD519D210710029B430 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		22CE828219E0A9C30043EA84 /* ConsoleDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleDelegate.swift; sourceTree = "<group>"; };
+		2A691B4B1DDC8660006CA9BF /* git_version.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = git_version.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +167,7 @@
 		22567DA119D1DB170029B430 = {
 			isa = PBXGroup;
 			children = (
+				2A691B4B1DDC8660006CA9BF /* git_version.sh */,
 				222C284219DFCF95001031AB /* Shared */,
 				22567DD519D210710029B430 /* CoreBluetooth.framework */,
 				222C27BE19DFCC5A001031AB /* BlueBasicIOS */,
@@ -207,6 +209,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 222C3DDB1A0838E2001676FF /* Build configuration list for PBXNativeTarget "BlueBasic" */;
 			buildPhases = (
+				2A691B4C1DDC867C006CA9BF /* ShellScript */,
 				222C3DC01A0838E2001676FF /* Sources */,
 				222C3DC11A0838E2001676FF /* Frameworks */,
 				222C3DC21A0838E2001676FF /* Resources */,
@@ -287,6 +290,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2A691B4C1DDC867C006CA9BF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = $PROJECT_DIR/git_version.sh;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		222C27B919DFCC5A001031AB /* Sources */ = {
