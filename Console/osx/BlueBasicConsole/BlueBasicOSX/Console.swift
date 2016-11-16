@@ -171,9 +171,15 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     for ch in str.characters {
       pending.append(ch)
       if ch == "\n" || pending.utf16.count > 19 {
-        current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
+        if let buf = pending.data(using: String.Encoding.ascii, allowLossyConversion: false) {
+          current!.write(buf, characteristic: outputCharacteristic!, type: .withResponse)
+          wrote += 1
+        } else {
+          let alert = NSAlert()
+          alert.messageText = "Could not write \"\(pending)\". Only ASCII characters could be written to the console."
+          alert.runModal()
+        }
         pending = ""
-        wrote += 1
       }
     }
   }
