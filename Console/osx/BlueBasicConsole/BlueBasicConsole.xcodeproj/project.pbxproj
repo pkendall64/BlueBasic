@@ -192,6 +192,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 222C27DF19DFCC5A001031AB /* Build configuration list for PBXNativeTarget "BlueBasicIOS" */;
 			buildPhases = (
+				2A691B4D1DDC8A08006CA9BF /* ShellScript */,
 				222C27B919DFCC5A001031AB /* Sources */,
 				222C27BA19DFCC5A001031AB /* Frameworks */,
 				222C27BB19DFCC5A001031AB /* Resources */,
@@ -293,6 +294,19 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		2A691B4C1DDC867C006CA9BF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = $PROJECT_DIR/git_version.sh;
+		};
+		2A691B4D1DDC8A08006CA9BF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
