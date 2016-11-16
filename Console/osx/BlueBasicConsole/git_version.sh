@@ -3,7 +3,6 @@
 
 echo "Updating version/build number from git..."
 plist=${INFOPLIST_FILE}
-#settings=${PROJECT_DIR}/techBASIC\ Univ/Settings.bundle/Root.plist
 
 # increment the build number (ie 115 to 116)
 versionnum=`git describe | awk '{split($0,a,"-"); print a[1]}'`
@@ -21,10 +20,6 @@ fi
 
 /usr/libexec/Plistbuddy -c "Set CFBundleShortVersionString $buildnum" "${plist}"
 echo "Updated version number to $buildnum"
-
 /usr/libexec/Plistbuddy -c "Set CFBundleVersion $buildnum" "${plist}"
-
-#/usr/libexec/Plistbuddy -c "Set PreferenceSpecifiers:1:DefaultValue $buildnum" "${settings}"
-
 echo "Updated build number to $buildnum"
 echo ${PRODUCT_NAME} $buildnum  >version.txt
