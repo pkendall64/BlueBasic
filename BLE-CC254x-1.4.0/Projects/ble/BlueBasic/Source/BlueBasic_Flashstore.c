@@ -390,6 +390,7 @@ void flashstore_compact(unsigned char len, unsigned char* tempmemstart, unsigned
   unsigned char pg;
   unsigned char selected = 0;
   flashpage_age age = 0xFFFFFFFF;
+  len = FLASHSTORE_PADDEDSIZE(len);
   for (pg = 0; pg < FLASHSTORE_NRPAGES; pg++)
   {
     flashpage_age cage = *(flashpage_age*)FLASHSTORE_PAGEBASE(pg);
@@ -417,6 +418,7 @@ void flashstore_compact(unsigned char len, unsigned char* tempmemstart, unsigned
 
     // Copy the old lines back in. More efficient ways to do this, but okay for the moment
     unsigned char* ptr;
+    flash += sizeof(flashpage_age);
     for (ptr = ram + sizeof(flashpage_age); ptr < ram + FLASHSTORE_PAGESIZE; )
     {
       unsigned short id = *(unsigned short*)ptr;
@@ -427,12 +429,13 @@ void flashstore_compact(unsigned char len, unsigned char* tempmemstart, unsigned
       }
       else if (id != FLASHID_INVALID)
       {
-        OS_flashstore_write(FLASHSTORE_FADDR(ptr - ram + flash), ptr, FLASHSTORE_WORDS(len));
+        OS_flashstore_write(FLASHSTORE_FADDR(flash), ptr, FLASHSTORE_WORDS(len));
         orderedpages[selected].free -= len;
+        flash += len;
       }
       ptr += len;
     }
-  
+
     // We corrupted memory, so we need to reinitialize
     flashstore_init((unsigned char**)lineindexstart);
   }
