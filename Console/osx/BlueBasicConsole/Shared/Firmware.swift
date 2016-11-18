@@ -50,8 +50,14 @@ class Firmware: ConsoleDelegate {
   func onWriteComplete(_ uuid: CBUUID) {
     
     let blocksize = 16
-    let countsize = 16
-
+    var countsize = 16
+    if #available(iOS 9, *) {
+      countsize = 1
+    }
+    if #available(iOS 10.2, *) {
+      countsize = 16
+    }
+    
     switch uuid {
     case UUIDS.imgIdentityUUID:
       let nrblocks = (firmware!.count + blocksize - 1) / blocksize
@@ -59,7 +65,6 @@ class Firmware: ConsoleDelegate {
         let block = NSMutableData(capacity: blocksize + 2)!
         let blockheader = [ UInt8(i & 255), UInt8(i >> 8) ]
         block.append(blockheader, length: 2)
-//        block.append(self.firmware!.subdata(in: NSMakeRange(i * blocksize, blocksize)))
         block.append(self.firmware!.subdata(in: (i * blocksize)..<(i*blocksize + blocksize)))
         if i < nrblocks - 1 && i % countsize != 0 {
           device.write(block as Data, characteristic: blockCharacteristic!, type: .withoutResponse)
@@ -73,7 +78,7 @@ class Firmware: ConsoleDelegate {
       if written == wrote - 1 { // Last ack is always lost as device reboots
         console.setStatus("Waiting...")
         // Wait for 5 seconds to give last writes change to finish
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(5_000_000_000) / Double(NSEC_PER_SEC)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
           self.console.disconnect() {
             success in
             self.console.connectTo(self.device, onConnected: self.complete)
