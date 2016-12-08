@@ -172,8 +172,14 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
       pending.append(ch)
       if ch == "\n" || pending.utf16.count > 19 {
         if let buf = pending.data(using: String.Encoding.ascii, allowLossyConversion: false) {
-          current!.write(buf, characteristic: outputCharacteristic!, type: .withResponse)
-          wrote += 1
+          if pending.lowercased() != "reboot\n" {
+            current!.write(buf, characteristic: outputCharacteristic!, type: .withResponse)
+            wrote += 1
+          } else {
+            current!.write(buf, characteristic: outputCharacteristic!, type: .withoutResponse)
+            self.append("disconnecting from console...\n")
+            perform(#selector(disconnect), with: nil, afterDelay: 0.1)
+          }
         } else {
           let alert = NSAlert()
           alert.messageText = "Could not write \"\(pending)\". Only ASCII characters could be written to the console."
