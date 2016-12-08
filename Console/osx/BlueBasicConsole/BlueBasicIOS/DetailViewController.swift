@@ -19,6 +19,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   var inputCharacteristic: CBCharacteristic?
   var outputCharacteristic: CBCharacteristic?
   var pending = ""
+  var linebuffer = ""
   
   var keyboardOpen: CGRect? = nil
   
@@ -28,6 +29,7 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
   var recoveryMode = false
   var wrote = 0
   var written = 0
+  var reboot = -1
   
   var detailItem: AnyObject? {
     didSet {
@@ -197,6 +199,13 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
       written = 0
     }
     delegate?.onWriteComplete(uuid)
+    if reboot == written {
+      console.insertText("\nREBOOT\ndisconnecting from console...\n")
+      perform(#selector(disconnect), with: nil, afterDelay: 0.1)
+      reboot = -1
+      wrote = 0
+      written = 0
+    }
   }
   
   func onNotification(_ success: Bool, uuid: CBUUID, data: Data) {
@@ -239,28 +248,65 @@ class DetailViewController: UIViewController, UITextViewDelegate, DeviceDelegate
     }
   }
   
-  func write(_ str: String = "\n") {
+  func write(_ text: String = "\n") -> Bool {
+    
+    // since write() might get called with single characaters or entire text or anything in between
+    // first we filter the input to throw away comment lines, in case an entire text comes in
+    // likely a copy/paste action
+    var textArray: [String]  = []
+    for line in text.components(separatedBy: "\n") {
+      if !line.hasPrefix("//") {
+        textArray.append(line)
+      }
+    }
+    let str = textArray.joined(separator: "\n")
+    
     for ch in str.characters {
       pending.append(ch)
       if ch == "\n" || pending.utf16.count > 19 {
-        current!.write(pending.data(using: String.Encoding.ascii, allowLossyConversion: false)!, characteristic: outputCharacteristic!, type: .withResponse)
+        if let buf = pending.data(using: String.Encoding.ascii, allowLossyConversion: false) {
+          current!.write(buf, characteristic: outputCharacteristic!, type: .withResponse)
+          wrote += 1
+          // check for the reboot command (a bit unsafe, since it could at line end and 20 byte boundery)
+          if pending.lowercased() == "reboot\n" {
+            // check if there is there are writes pending
+            if wrote > 1 {
+              reboot = wrote - 1 // schedule reboot one buffered write earlier
+            } else {
+              // in interactive mode we execute the disconnect
+              console.insertText("\ndisconnecting from console...\n")
+              perform(#selector(disconnect), with: nil, afterDelay: 0.1)
+              wrote = 0
+              written = 0
+              reboot = -1
+            }
+          }
+        } else {
+          console.insertText("\nOnly ASCII characters, try again.\n")
+          wrote = 0
+          written = 0
+          return false
+        }
         pending = ""
-        wrote += 1
       }
     }
+    return true
   }
   
   func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
     if current == nil {
       return false
     } else if text.utf16.count > 0 {
-      write(text)
-      if range.location == console.text.utf16.count {
-        return true
+      if write(text) {
+        if range.location == console.text.utf16.count {
+          return true
+        } else {
+          console.selectedRange = NSMakeRange(console.text!.utf16.count, 0)
+          console.insertText(text)
+          console.scrollRangeToVisible(NSMakeRange(console.text.utf16.count, 0))
+          return false
+        }
       } else {
-        console.selectedRange = NSMakeRange(console.text!.utf16.count, 0)
-        console.insertText(text)
-        console.scrollRangeToVisible(NSMakeRange(console.text.utf16.count, 0))
         return false
       }
     } else if range.location == console.text.utf16.count - 1 && pending.utf16.count > 0 {

@@ -33,7 +33,7 @@ class Firmware: ConsoleDelegate {
       flash()
     } else {
       console.setStatus("Rebooting")
-      console.write("REBOOT UP\n")
+      _ = console.write("REBOOT UP\n")
       // Wait a moment to give device chance to reboot
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(1_000_000_000) / Double(NSEC_PER_SEC)) {
         self.console.disconnect() {
