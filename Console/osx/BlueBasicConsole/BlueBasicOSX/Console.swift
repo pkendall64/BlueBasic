@@ -22,6 +22,7 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
   var recoveryMode = false
   var wrote = 0
   var written = 0
+  var reboot = -1
   
   var delegate: ConsoleDelegate?
 
@@ -132,6 +133,13 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
       written = 0
     }
     delegate?.onWriteComplete(uuid)
+    if reboot == written {
+      self.append("\nREBOOT\ndisconnecting from console...\n")
+      perform(#selector(disconnect), with: nil, afterDelay: 0.1)
+      reboot = -1
+      wrote = 0
+      written = 0
+    }
   }
   
   func onNotification(_ success: Bool, uuid: CBUUID, data: Data) {
@@ -172,13 +180,20 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
       pending.append(ch)
       if ch == "\n" || pending.utf16.count > 19 {
         if let buf = pending.data(using: String.Encoding.ascii, allowLossyConversion: false) {
-          if pending.lowercased() != "reboot\n" {
-            current!.write(buf, characteristic: outputCharacteristic!, type: .withResponse)
-            wrote += 1
-          } else {
-            current!.write(buf, characteristic: outputCharacteristic!, type: .withoutResponse)
-            self.append("disconnecting from console...\n")
-            perform(#selector(disconnect), with: nil, afterDelay: 0.1)
+          current!.write(buf, characteristic: outputCharacteristic!, type: .withResponse)
+          wrote += 1
+          if "reboot\n" == pending.lowercased() {
+            // check if there is there are writes pending
+            if wrote > 1 {
+              reboot = wrote - 1 // schedule reboot one buffered write earlier
+            } else {
+              // in interactive mode we execute the disconnect
+              self.append("disconnecting from console...\n")
+              perform(#selector(disconnect), with: nil, afterDelay: 0.1)
+              wrote = 0
+              written = 0
+              reboot = -1
+            }
           }
         } else {
           let alert = NSAlert()
