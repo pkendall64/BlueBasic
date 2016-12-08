@@ -41,18 +41,25 @@ class Uploader: ConsoleDelegate {
       data = ""
     }
     
+    var comment = ""
     for item in data.components(separatedBy: "\n") {
       let line = item + "\n"
-      write(line)
-      // in order to echo the upload to the console
-      // we slice each line into 20 byte chunks (as write does)
-      var chunk = ""
-      for ch in line.characters {
-        chunk.append(ch)
-        if ch == "\n" || chunk.utf16.count > 19 {
-          chunkArr.append(chunk)
-          chunk = ""
+      // if the entire line is a comment we skip it
+      if !line.hasPrefix("//") {
+        self.write(line)
+        // in order to echo the upload to the console
+        // we slice each line into 20 byte chunks (as write does)
+        var chunk = ""
+        for ch in line.characters {
+          chunk.append(ch)
+          if ch == "\n" || chunk.utf16.count > 19 {
+            chunkArr.append(comment + chunk)
+            chunk = ""
+            comment = ""
+          }
         }
+      } else {
+        comment += line
       }
     }
   }
