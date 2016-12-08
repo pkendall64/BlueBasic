@@ -46,7 +46,10 @@ class Uploader: ConsoleDelegate {
       let line = item + "\n"
       // if the entire line is a comment we skip it
       if !line.hasPrefix("//") {
-        self.write(line)
+        if !self.write(line) {
+          console.status = "File upload failed"
+          return
+        }
         // in order to echo the upload to the console
         // we slice each line into 20 byte chunks (as write does)
         var chunk = ""
@@ -63,10 +66,11 @@ class Uploader: ConsoleDelegate {
       }
     }
   }
-  
-  func write(_ str: String) {
+
+
+  func write(_ str: String) -> Bool {
     wrote += (str.utf16.count + 19) / 20
-    console.write(str)
+    return console.write(str)
   }
   
   func onNotification(_ uuid: CBUUID, data: Data) -> Bool {

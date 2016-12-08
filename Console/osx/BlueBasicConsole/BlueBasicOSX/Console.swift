@@ -175,7 +175,7 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     }
   }
   
-  func write(_ str: String = "\n") {
+  func write(_ str: String = "\n") -> Bool{
     for ch in str.characters {
       pending.append(ch)
       if ch == "\n" || pending.utf16.count > 19 {
@@ -199,10 +199,15 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
           let alert = NSAlert()
           alert.messageText = "Could not write \"\(pending)\". Only ASCII characters could be written to the console."
           alert.runModal()
+          wrote = 0
+          written = 0
+          pending = ""
+          return false
         }
         pending = ""
       }
     }
+    return true
   }
   
   func append(_ str: String) {
@@ -215,12 +220,15 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
     if current == nil {
       return false
     } else if replacementString!.utf16.count > 0 {
-      write(replacementString!)
-      if affectedCharRange.location == consoleCount {
-        return true
+      if write(replacementString!) {
+        if affectedCharRange.location == consoleCount {
+          return true
+        } else {
+          textView.replaceCharacters(in: NSMakeRange(consoleCount, 0), with: replacementString!)
+          textView.setSelectedRange(NSMakeRange(console.string!.utf16.count, 0))
+          return false
+        }
       } else {
-        textView.replaceCharacters(in: NSMakeRange(consoleCount, 0), with: replacementString!)
-        textView.setSelectedRange(NSMakeRange(console.string!.utf16.count, 0))
         return false
       }
     } else if affectedCharRange.location == consoleCount - 1 && pending.utf16.count > 0 {
