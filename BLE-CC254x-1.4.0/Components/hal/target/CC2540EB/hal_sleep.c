@@ -167,7 +167,7 @@
 // The second value is determined by measuring the number of sleep timer ticks
 // from exit of sleep mode to the call to osal_adjust_timers().
 #if defined( CC2541) || defined( CC2541S )
-#define HAL_SLEEP_ADJ_TICKS                 35                    // default sleep adjustment, in 32kHz ticks
+#define HAL_SLEEP_ADJ_TICKS                 45                    // default sleep adjustment, in 32kHz ticks
 #else // CC2540
 #define HAL_SLEEP_ADJ_TICKS                 35                    // default sleep adjustment, in 32kHz ticks
 #endif // CC2541 || CC2541S
