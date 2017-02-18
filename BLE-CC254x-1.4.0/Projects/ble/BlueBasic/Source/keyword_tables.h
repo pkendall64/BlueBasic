@@ -8,6 +8,7 @@ static const unsigned char keywords_0[] =
   'A','N','A','L','O','G',KW_ANALOG,
   'A','P','P','E','N','D',FS_APPEND,
   'A','T','T','A','C','H',IN_ATTACH,
+  'A','U','T','H',BLE_AUTH,
   'A','U','T','O','R','U','N',KW_AUTORUN,
   'A','V','D','D',KW_CONSTANT,CO_AVDD,
   'N','A','M','E',BLE_NAME,

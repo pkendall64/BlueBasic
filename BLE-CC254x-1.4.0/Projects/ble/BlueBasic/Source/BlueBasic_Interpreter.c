@@ -4956,7 +4956,7 @@ static char ble_build_service(void)
             break;
           case BLE_AUTH:
             ch |= GATT_PROP_AUTHEN;
-            switch (*txtpos)
+            switch (*(txtpos - 2))
             {
               case KW_READ:
                 attributes[count].permissions |= GATT_PERMIT_AUTHEN_READ;
