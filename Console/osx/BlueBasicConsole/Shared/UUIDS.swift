@@ -21,5 +21,6 @@ struct UUIDS {
   
   static let deviceInfoServiceUUID = CBUUID(string: "180A")
   static let firmwareRevisionUUID = CBUUID(string: "2A26")
+  static let systemIdUUID = CBUUID(string: "2A23")
   
 }

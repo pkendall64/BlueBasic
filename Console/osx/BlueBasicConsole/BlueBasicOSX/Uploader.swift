@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreBluetooth
+import Security
 
 class Uploader: ConsoleDelegate {
   
