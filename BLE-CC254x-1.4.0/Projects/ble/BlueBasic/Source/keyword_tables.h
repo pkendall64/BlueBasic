@@ -46,6 +46,7 @@ static const unsigned char keywords_2[] =
   'P','A','S','S','C','O','D','E',KW_CONSTANT,CO_DEFAULT_PASSCODE,
   'P','I','N','M','O','D','E',KW_PINMODE,
   'P','O','W','E','R',KW_CONSTANT,CO_POWER,
+  'P','O','W',FUNC_POW,
   'P','R','I','N','T',KW_PRINT,
   'P','U','L','L','D','O','W','N',PM_PULLDOWN,
   'P','U','L','L','U','P',PM_PULLUP,

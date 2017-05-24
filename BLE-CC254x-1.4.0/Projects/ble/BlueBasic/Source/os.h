@@ -8,7 +8,16 @@
 // os.h
 //
 
-#define kVersion "v0.7"
+
+#define kVersion "v0.9"
+
+#ifndef kProduct
+#define kProduct "BlueBasic"
+#endif
+
+#ifndef kMfrName
+#define kMfrName "https://github.com/kscheff/BlueBasic"
+#endif
 
 #if __APPLE__
 

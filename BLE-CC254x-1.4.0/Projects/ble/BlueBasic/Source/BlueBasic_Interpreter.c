@@ -39,6 +39,7 @@
 //      The goal is to put a Basic interpreter onto the TI CC254x Bluetooth LE chip.
 
 #include "os.h"
+#include "math.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +99,7 @@ static const char initmsg[]           = "BlueBasic " BUILD_TIMESTAMP " " kVersio
 static const char initmsg[]           = "BlueBasic " kVersion;
 #endif
 //static const char urlmsg[]            = "http://blog.xojs.org/bluebasic";
-static const char urlmsg[]            = "https://github.com/kscheff/BlueBasic";
+static const char urlmsg[]            = kMfrName;
 static const char memorymsg[]         = " bytes free.";
 
 #define VAR_TYPE    long int
@@ -213,7 +214,8 @@ enum
   // -----------------------
   // Funciton & operator spacers - to add main keywords later without messing up the numbering below
   //
-  FUNC_SPACE0,
+  FUNC_POW,
+//  FUNC_SPACE0,
   FUNC_SPACE1,
   FUNC_SPACE2,
   FUNC_SPACE3,
@@ -1378,6 +1380,7 @@ static VAR_TYPE expression(unsigned char mode)
       case KW_PIN_P2:
 #endif
       case BLE_FUNC_BTPEEK:
+      case FUNC_POW:
         if (stackptr == stackend)
         {
           goto expr_oom;
@@ -1538,6 +1541,12 @@ static VAR_TYPE expression(unsigned char mode)
                 break;
             }
           }
+          else if (depth == 2)
+          {
+            double base = (double)(queueptr[-2]) / 0x10000;
+            double exp  = (double)(queueptr[-1]) / 0x10000;
+            (--queueptr)[-1] = (VAR_TYPE)(pow(base, exp) * 0x10000);
+          }            
           else
           {
             goto expr_error;
