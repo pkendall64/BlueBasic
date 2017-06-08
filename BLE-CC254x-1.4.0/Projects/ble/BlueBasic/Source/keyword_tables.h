@@ -110,6 +110,7 @@ static const unsigned char keywords_6[] =
   'G','E','N','_','D','I','S','C','_','A','D','V','_','M','I','N',KW_CONSTANT,CO_GEN_DISC_ADV_MIN,
   'G','O','S','U','B',KW_GOSUB,
   'G','O','T','O',KW_GOTO,
+  'T','E','M','P',FUNC_TEMP,
   'T','I','M','E','O','U','T','_','M','U','L','T','I','P','L','I','E','R',KW_CONSTANT,CO_TIMEOUT_MULTIPLIER,
   'T','I','M','E','O','U','T',PM_TIMEOUT,
   'T','I','M','E','R',KW_TIMER,

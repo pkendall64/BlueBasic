@@ -215,8 +215,9 @@ enum
   // Funciton & operator spacers - to add main keywords later without messing up the numbering below
   //
   FUNC_POW,
+  FUNC_TEMP,
 //  FUNC_SPACE0,
-  FUNC_SPACE1,
+//  FUNC_SPACE1,
   FUNC_SPACE2,
   FUNC_SPACE3,
   
@@ -1381,6 +1382,7 @@ static VAR_TYPE expression(unsigned char mode)
 #endif
       case BLE_FUNC_BTPEEK:
       case FUNC_POW:
+      case FUNC_TEMP:
         if (stackptr == stackend)
         {
           goto expr_oom;
@@ -1464,6 +1466,52 @@ static VAR_TYPE expression(unsigned char mode)
               }
               case FUNC_MILLIS:
                 *queueptr++ = (VAR_TYPE)OS_get_millis();
+                break;
+              case FUNC_TEMP:
+                {
+                  VAR_TYPE top;
+                  TR0 = 0x01; // connect temperture sensor to ADC
+                  ATEST = 0x01;
+                  ADCCON3 = 0x0E | 0x30 | 0x00; // temperature sensor, 12-bit, internal voltage reference
+                  while ((ADCCON1 & 0x80) == 0)
+                    ;
+                  top = ADCL;
+                  top |= ADCH << 8;  
+                  ATEST = 0;
+                  TR0 = 0;
+                  // data sheet says 1480 @ 25C
+                  // and 4.5 bits per 1C
+                  // we use the factory data stored in info word 7
+#define INFOPAGE_WORD7 0x781C
+    //now we access the calibration data from the TI factory
+    //according to https://e2e.ti.com/support/wireless_connectivity/f/538/p/396260/1450855#1450855
+    // addr     DWORD   Data    Decription    
+    // 0x781C   7       0x96    3V temperature sensor reading       
+    // 0x781D           0x17    0x17 = 23, test temp RT
+    // 0x781E           ADCH    temperature sensor, Vdd = 3.0v        
+    // 0x781F           ADCL    temperature sensor, Vdd = 3.0v
+    // 0x7820   8       0x32    2V temperature sensor reading
+    // 0x7821           0x17    0x17 = 23, test temp RT        
+    // 0x7822           ADCH    temperature sensor, Vdd = 2.0v
+    // 0x7823           ADCL    temperature sensor, Vdd = 2.0v
+    //
+    // Attention: the RT temperature is not controlled in the factory
+    // TI claims it has a lot to lt variantion depending on the factory temp
+    // kai: the factory ADC values seems to be 14-bit format
+                  uint16 factoryAdc;
+                  uint16  factoryTemp;
+                  if ( *((uint8 *)INFOPAGE_WORD7 + 0) == 0x96 ){
+                    factoryAdc  = *((uint8 *)INFOPAGE_WORD7 + 2)<<8
+                                | *((uint8 *)INFOPAGE_WORD7 + 3);
+                    factoryTemp = (uint16)(*((uint8 *)INFOPAGE_WORD7 + 1)) * 100;
+                  } else {
+                    // use data sheet values
+                    factoryAdc = 1480<<4;
+                    factoryTemp = 2500;
+                  }
+                  //return temperature in degree celsius * 100
+                  *queueptr++ = (top - factoryAdc + 36) * 100 / 72 + factoryTemp;
+                }
                 break;
               default:
                 goto expr_error;
