@@ -1497,20 +1497,19 @@ static VAR_TYPE expression(unsigned char mode)
     //
     // Attention: the RT temperature is not controlled in the factory
     // TI claims it has a lot to lt variantion depending on the factory temp
-    // kai: the factory ADC values seems to be 14-bit format
                   uint16 factoryAdc;
-                  uint16  factoryTemp;
+                  uint8  factoryTemp;
                   if ( *((uint8 *)INFOPAGE_WORD7 + 0) == 0x96 ){
                     factoryAdc  = *((uint8 *)INFOPAGE_WORD7 + 2)<<8
                                 | *((uint8 *)INFOPAGE_WORD7 + 3);
-                    factoryTemp = (uint16)(*((uint8 *)INFOPAGE_WORD7 + 1)) * 100;
+                    factoryTemp = *((uint8 *)INFOPAGE_WORD7 + 1);
                   } else {
                     // use data sheet values
                     factoryAdc = 1480<<4;
-                    factoryTemp = 2500;
+                    factoryTemp = 25;
                   }
                   //return temperature in degree celsius * 100
-                  *queueptr++ = (top - factoryAdc + 36) * 100 / 72 + factoryTemp;
+                  *queueptr++ = ((top - factoryAdc) * 100 + 36) / 72 + 100 * factoryTemp;
                 }
                 break;
               default:
