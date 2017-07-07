@@ -536,6 +536,7 @@ static unsigned char IEN1, IEN2;
 static unsigned char U0BAUD, U0GCR, U0CSR, U0DBUF;
 static unsigned char U1BAUD, U1GCR, U1CSR, U1DBUF;
 static unsigned char PERCFG;
+static unsigned char TR0, ATEST;
 #endif
 
 static unsigned char spiChannel;

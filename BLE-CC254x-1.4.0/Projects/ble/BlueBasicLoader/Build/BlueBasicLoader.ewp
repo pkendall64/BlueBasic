@@ -142,7 +142,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -151,7 +151,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -780,7 +780,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -837,7 +837,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>F:\github\BlueBasic\BLE-CC254x-1.4.0\Projects\ble\common\cc2540\cc254x_f256_imgA.xcl</state>
+          <state>$PROJ_DIR$\..\..\common\cc2540\cc254x_f256_imgA.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -982,7 +982,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -1284,21 +1284,21 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>Full formatting.</state>
+          <state>No float.</state>
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>Full formatting.</state>
+          <state>No float.</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1922,7 +1922,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -1979,7 +1979,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>F:\github\BlueBasic\BLE-CC254x-1.4.0\Projects\ble\common\cc2540\cc254x_f256_imgA.xcl</state>
+          <state>$PROJ_DIR$\..\..\common\cc2540\cc254x_f256_imgA.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -2124,7 +2124,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -2426,7 +2426,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -2435,7 +2435,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -3064,7 +3064,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -3121,7 +3121,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>F:\github\BlueBasic\BLE-CC254x-1.4.0\Projects\ble\common\cc2540\cc254x_f256_imgA.xcl</state>
+          <state>$PROJ_DIR$\..\..\common\cc2540\cc254x_f256_imgA.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -3266,7 +3266,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -3454,7 +3454,7 @@
     <group>
       <name>Common</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\hal\common\hal_drivers.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\Components\hal\common\hal_drivers.c</name>
       </file>
     </group>
     <group>
@@ -3564,7 +3564,7 @@
             </excluded>
           </file>
           <file>
-            <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\hal\target\CC2540EB\hal_sleep.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_sleep.c</name>
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_startup.c</name>
@@ -3666,22 +3666,22 @@
       <name>$PROJ_DIR$\..\..\..\..\Components\ble\include\bcomdef.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\osal\common\OSAL.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\osal_bufmgr.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\osal\common\osal_cbtimer.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\osal_cbtimer.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\osal\common\OSAL_ClockBLE.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_ClockBLE.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\osal\common\OSAL_Memory.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Memory.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\osal\common\OSAL_PwrMgr.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_PwrMgr.c</name>
       <excluded>
         <configuration>CC2541-ImgA</configuration>
         <configuration>CC2540-ImgA</configuration>
@@ -3689,7 +3689,7 @@
       </excluded>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\osal\common\OSAL_Timers.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\osal\common\OSAL_Timers.c</name>
     </file>
   </group>
   <group>
@@ -3723,7 +3723,7 @@
       <name>$PROJ_DIR$\..\..\Include\gapgattserver.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\ble\host\gatt_uuid.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\Components\ble\host\gatt_uuid.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\Include\gattservapp.h</name>
@@ -3768,5 +3768,3 @@
     </file>
   </group>
 </project>
-
-

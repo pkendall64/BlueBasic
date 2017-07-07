@@ -23,9 +23,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <memory.h>
 #include <time.h>
 #include <assert.h>
+
+#define uint8 uint8_t
+#define uint16 uint16_t
 
 #define __data
 

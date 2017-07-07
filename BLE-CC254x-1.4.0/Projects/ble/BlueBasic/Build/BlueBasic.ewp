@@ -142,21 +142,21 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>Full formatting.</state>
+          <state>No float.</state>
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>Full formatting.</state>
+          <state>No float.</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -781,7 +781,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -983,7 +983,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -1285,7 +1285,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -1294,7 +1294,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -1923,7 +1923,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -2125,7 +2125,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -2427,7 +2427,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -2436,7 +2436,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -3046,8 +3046,8 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>"$PROJ_DIR$\..\..\common\CC2540\timestamp.bat" "$PROJ_DIR$" CC2541 "$OBJ_DIR$"</prebuild>
-        <postbuild>"$PROJ_DIR$\..\..\common\CC2540\convert-and-merge.bat" "$PROJ_DIR$" CC2541-ImgA  CC2541-ImgB  CC2541</postbuild>
+        <prebuild>"$PROJ_DIR$\..\..\common\cc2540\timestamp.bat" "$PROJ_DIR$" CC2541 "$OBJ_DIR$"</prebuild>
+        <postbuild>"$PROJ_DIR$\..\..\common\cc2540\convert-and-merge.bat" "$PROJ_DIR$" CC2541-ImgA  CC2541-ImgB  CC2541</postbuild>
       </data>
     </settings>
     <settings>
@@ -3072,7 +3072,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -3129,7 +3129,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>F:\github\BlueBasic\BLE-CC254x-1.4.0\Projects\ble\common\cc2540\cc254x_f256_imgB.xcl</state>
+          <state>$PROJ_DIR$\..\..\common\cc2540\cc254x_f256_imgB.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -3274,7 +3274,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -3576,7 +3576,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -3585,7 +3585,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -4196,8 +4196,8 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>"$PROJ_DIR$\..\..\common\CC2540\timestamp.bat" "$PROJ_DIR$" CC2540 "$OBJ_DIR$"</prebuild>
-        <postbuild>"$PROJ_DIR$\..\..\common\CC2540\convert-and-merge.bat" "$PROJ_DIR$" CC2540-ImgA CC2540-ImgB CC2540</postbuild>
+        <prebuild>"$PROJ_DIR$\..\..\common\cc2540\timestamp.bat" "$PROJ_DIR$" CC2540 "$OBJ_DIR$"</prebuild>
+        <postbuild>"$PROJ_DIR$\..\..\common\cc2540\convert-and-merge.bat" "$PROJ_DIR$" CC2540-ImgA CC2540-ImgB CC2540</postbuild>
       </data>
     </settings>
     <settings>
@@ -4222,7 +4222,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -4279,7 +4279,7 @@
         </option>
         <option>
           <name>XclFile</name>
-          <state>F:\github\BlueBasic\BLE-CC254x-1.4.0\Projects\ble\common\cc2540\cc254x_f256_imgB.xcl</state>
+          <state>$PROJ_DIR$\..\..\common\cc2540\cc254x_f256_imgB.xcl</state>
         </option>
         <option>
           <name>XclFileSlave</name>
@@ -4424,7 +4424,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -4726,7 +4726,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -4735,7 +4735,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -5371,7 +5371,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -5573,7 +5573,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -5875,7 +5875,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -5884,7 +5884,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -6522,7 +6522,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -6724,7 +6724,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -7026,7 +7026,7 @@
         </option>
         <option>
           <name>Input variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -7035,7 +7035,7 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
+          <version>1</version>
           <state>3</state>
         </option>
         <option>
@@ -7673,7 +7673,7 @@
         </option>
         <option>
           <name>FormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -7875,7 +7875,7 @@
         </option>
         <option>
           <name>ExtraFormatVariant</name>
-          <version>9</version>
+          <version>8</version>
           <state>2</state>
         </option>
         <option>
@@ -8548,10 +8548,10 @@
             <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\hal\target\CC2540EB\hal_dma.h</name>
           </file>
           <file>
-            <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_mcu.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\hal\target\CC2540EB\hal_mcu.h</name>
           </file>
           <file>
-            <name>$PROJ_DIR$\..\..\..\..\Components\hal\target\CC2540EB\hal_types.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\COMPONENTS\hal\target\CC2540EB\hal_types.h</name>
           </file>
         </group>
       </group>
@@ -8729,7 +8729,7 @@
       <name>$PROJ_DIR$\..\..\common\cc2540\OnBoard.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\common\cc2540\OnBoard.h</name>
+      <name>$PROJ_DIR$\..\..\common\CC2540\OnBoard.h</name>
     </file>
   </group>
 </project>

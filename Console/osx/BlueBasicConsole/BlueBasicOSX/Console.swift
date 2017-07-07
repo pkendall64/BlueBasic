@@ -83,12 +83,13 @@ class Console: NSObject, NSTextViewDelegate, DeviceDelegate, ConsoleProtocol {
             list in
             if list[UUIDS.commsServiceUUID] != nil {
               // first we try to read the System ID from the device Info Service
-              let systemId = list[UUIDS.deviceInfoServiceUUID]!.characteristics[UUIDS.systemIdUUID]!
-              self.device.read(systemId) {
-                data in
-                if data != nil {
-                  print(<#T##items: Any...##Any#>)
-                }
+//              let systemId = list[UUIDS.deviceInfoServiceUUID]!.characteristics[UUIDS.systemIdUUID]!
+//              self.device.read(systemId) {
+//                data in
+//                if data != nil {
+//                  print(<#T##items: Any...##Any#>)
+//                }
+//              }
               self.inputCharacteristic = list[UUIDS.commsServiceUUID]!.characteristics[UUIDS.inputCharacteristicUUID]
               self.outputCharacteristic = list[UUIDS.commsServiceUUID]!.characteristics[UUIDS.outputCharacteristicUUID]
               self.current!.read(self.inputCharacteristic!) {
